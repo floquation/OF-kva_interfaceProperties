@@ -1,0 +1,7 @@
+interfaceProperties.C
+
+curvatureModel/curvatureModel.C
+curvatureModel/normal/normal.C
+curvatureModel/vofsmooth/vofsmooth.C
+
+LIB = $(FOAM_USER_LIBBIN)/libinterfaceProperties

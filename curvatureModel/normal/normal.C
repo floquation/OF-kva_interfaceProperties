@@ -1,0 +1,126 @@
+/*---------------------------------------------------------------------------*\
+  =========                 |
+  \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
+   \\    /   O peration     |
+    \\  /    A nd           | Copyright (C) 2011-2015 OpenFOAM Foundation
+     \\/     M anipulation  |
+-------------------------------------------------------------------------------
+License
+    This file is part of OpenFOAM.
+
+    OpenFOAM is free software: you can redistribute it and/or modify it
+    under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    OpenFOAM is distributed in the hope that it will be useful, but WITHOUT
+    ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+    FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
+    for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with OpenFOAM.  If not, see <http://www.gnu.org/licenses/>.
+
+\*---------------------------------------------------------------------------*/
+
+#include "normal.H"
+#include "addToRunTimeSelectionTable.H"
+
+#include "surfaceInterpolate.H"
+#include "fvcDiv.H"
+#include "fvcGrad.H"
+#include "fvcSnGrad.H"
+
+// * * * * * * * * * * * * * * Static Data Members * * * * * * * * * * * * * //
+
+namespace Foam
+{
+namespace curvatureModels
+{
+    defineTypeNameAndDebug(normal, 0);
+    addToRunTimeSelectionTable
+    (
+    	curvatureModel,
+        normal,
+        dictionary
+    );
+}
+}
+
+
+// * * * * * * * * * * * * * * * * Constructors  * * * * * * * * * * * * * * //
+
+Foam::curvatureModels::normal::normal
+(
+    const word& name,
+    const interfaceProperties& interfaceProperties,
+	const word& modelType
+)
+:
+	curvatureModel(name,interfaceProperties, modelType)
+{}
+
+
+// * * * * * * * * * * * * * * Member Functions  * * * * * * * * * * * * * * //
+
+void Foam::curvatureModels::normal::calculateK(volScalarField& K, surfaceScalarField& nHatf) const
+{
+	const volScalarField& alpha1 = retrieve_alpha();
+	const dimensionedScalar& deltaN = retrieve_deltaN();
+
+	const fvMesh& mesh = alpha1.mesh();
+	const surfaceVectorField& Sf = mesh.Sf();
+
+	// Cell gradient of alpha
+	const volVectorField gradAlpha(fvc::grad(alpha1, "nHat"));
+
+	// Interpolated face-gradient of alpha
+	surfaceVectorField gradAlphaf(fvc::interpolate(gradAlpha));
+
+	//gradAlphaf -=
+	//    (mesh.Sf()/mesh.magSf())
+	//   *(fvc::snGrad(alpha1_) - (mesh.Sf() & gradAlphaf)/mesh.magSf());
+
+	// Face unit interface normal
+	surfaceVectorField nHatfv(gradAlphaf/(mag(gradAlphaf) + deltaN));
+	// surfaceVectorField nHatfv
+	// (
+	//     (gradAlphaf + deltaN_*vector(0, 0, 1)
+	//    *sign(gradAlphaf.component(vector::Z)))/(mag(gradAlphaf) + deltaN_)
+	// );
+	correctContactAngle(nHatfv.boundaryFieldRef(), gradAlphaf.boundaryField());
+
+	// Face unit interface normal flux
+	nHatf = nHatfv & Sf;
+
+	// Simple expression for curvature
+	K = -fvc::div(nHatf);
+
+	// Complex expression for curvature.
+	// Correction is formally zero but numerically non-zero.
+	/*
+	volVectorField nHat(gradAlpha/(mag(gradAlpha) + deltaN_));
+	forAll(nHat.boundaryField(), patchi)
+	{
+		nHat.boundaryField()[patchi] = nHatfv.boundaryField()[patchi];
+	}
+
+	K_ = -fvc::div(nHatf_) + (nHat & fvc::grad(nHatfv) & nHat);
+	*/
+
+}
+
+
+
+bool Foam::curvatureModels::normal::read()
+{
+	Info << "kva: curvatureModels::normal::read();" << endl;
+
+	// Note: parent will not read normalCoeffs!
+    bool result = curvatureModel::read(this->type());
+
+    return result && true;
+}
+
+
+// ************************************************************************* //
