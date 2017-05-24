@@ -10,6 +10,13 @@ Current options are:
 
 Tested with OF40 and OF41.
 
+## About the author
+
+I (Kevin van As) am (at the time of writing) a PhD student at TUDelft, Faculty of Applied Sciences, Transport Phenomena group.
+My work is, qualitatively, on simulating boiling within OpenFOAM.
+
+https://www.linkedin.com/in/kevinvanas/
+
 ## Installation
 
 Source your OpenFOAM installation and go to an appropriate location (you may choose a different location if you like).
@@ -45,8 +52,8 @@ ldd $(which interFoam) | grep "interfaceProperties"
 ```
 
 The main advantage of this method is that you can use it with any solver that relies on OF's interfaceProperties library
-(interFoam, interDyMFoam, ...), without __any__ effort!
-It simply works. That is a __huge__ advantage to me, which also makes it easier to port to newer versions of OF.
+(interFoam, interDyMFoam, ...), without _any_ effort!
+It simply works. That is a _huge_ advantage to me, which also makes it easier to port to newer versions of OF.
 The disadvantage is that it, therefore, must use the very same name as OF's interfaceProperties.
 
 #### Doesn't that conflict with my (old) existing case?
@@ -54,7 +61,7 @@ The disadvantage is that it, therefore, must use the very same name as OF's inte
 The library was written in such a way that if dictionary entries are missing (see below), it will operate using the "normal"
 curvature model, which is identical to what OF's interfaceProperties is doing.
 Hence, it is completely safe having kva_interfaceProperties overriding OF's interfaceProperties behaviour:
-it is completely **identical**. No worries!
+it is completely *identical*. No worries!
 
 Well, there is one small difference: it will print a message to your log-file that is uses the default "normal" curvature model
 to inform you about which curvature model is being used.
@@ -70,7 +77,7 @@ LD_LIBRARY_PATH=./system:$LD_LIBRARY_PATH
 interFoam
 ```
 
-However, this will change LD_LIBRARY_PATH inside your shell - __not__ merely for this one execution.
+However, this will change LD_LIBRARY_PATH inside your shell --- __not__ merely for this one execution.
 This is bad practice, as unexpected things might happen.
 If you wish to only update LD_LIBRARY_PATH for one execution, then use the following instead:
 ```bash
