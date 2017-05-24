@@ -35,10 +35,10 @@ sigma           [ 1 0 -2 0 0 0 0 ] 1111;
 
 
 /* kva_interfaceProperties  *\
-curvatureModel      vofsmooth; // normal;
+curvatureModel      vofsmooth; // normal; // If absent default: normal
 vofsmoothCoeffs
 {
-    numSmoothingIterations 4;
+    numSmoothingIterations 2; // If absent default: 2
 }
 \* kva_interfaceProperties */
 
