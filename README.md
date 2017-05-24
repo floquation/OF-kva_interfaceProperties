@@ -6,16 +6,21 @@ Current options are:
 - "normal": The current OpenFOAM implementation, cf. Brackbill.
 - "vofsmooth": The curvature is calculated based on a Laplacian-smoothed alpha-field [1,2], which may reduce spurious currents by an order of magnitude. This is a port of [Hoang's [2] OF-1.6-ext code](https://www.cfd-online.com/Forums/openfoam-verification-validation/124363-interfoam-validation-bubble-droplet-flows-microfluidics.html).
 
-## OpenFOAM version
+## OpenFOAM version support
 
 Tested with OF40 and OF41.
 
-## About the author
+## OpenFOAM solvers support
 
-I (Kevin van As) am (at the time of writing) a PhD student at TUDelft, Faculty of Applied Sciences, Transport Phenomena group.
-My work is, qualitatively, on simulating boiling within OpenFOAM.
+At present, the code was only tested with the interFoam solver, without any adaptations.
 
-https://www.linkedin.com/in/kevinvanas/
+Theoretically, it should work with __any__ OF solver that relies on OF's interfaceProperties,
+as kva_interfaceProperties merely overrides OF's interfaceProperties' behaviour:
+* inter(DyM)Foam
+* compressibleInter(DyM)Foam
+* multiphaseInter(DyM)Foam
+* interPhaseChange(DyM)Foam
+* very likely some more!
 
 ## Installation
 
@@ -112,4 +117,12 @@ as if kva_interfaceProperties was not there.
 [1] Lafaurie B, Nardone C, Scardovelli R, Zaleski S, Zanetti G. Modelling merging and fragmentation in multiphase ﬂows with surfer. J Comput Phys 1994;113:134–47.
 
 [2] Hoang DA, van Steijn V, Portela LM, Kreutzer MT, Kleijn CR. Benchmark numerical simulations of segmented two-phase flows in microchannels using the Volume of Fluid method. J Computers & Fluids 2013;86:28-36
+
+
+## About the author
+
+I (Kevin van As) am (at the time of writing) a PhD student at TUDelft, Faculty of Applied Sciences, Transport Phenomena group.
+My work is, qualitatively, on simulating boiling within OpenFOAM.
+
+https://www.linkedin.com/in/kevinvanas/
 
