@@ -1,4 +1,4 @@
-# OF-kva_interfaceProperties
+# kva_interfaceProperties
 
 Extension of OpenFOAM's "interfaceProperties" library.
 A run-time selection mechanism was implemented to select the model for calculating the curvature (kappa).
