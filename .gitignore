@@ -1,2 +1,4 @@
 lnInclude/
+Make/$WM_ARCH
 .nfs*
+*.swp
