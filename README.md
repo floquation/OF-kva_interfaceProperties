@@ -40,7 +40,13 @@ Simply compile the code
 ```bash
 wmake
 ```
-__And you're done!__ You can stop reading this section, unless you want to know more.
+
+Finally, it is also necessary to recompile the solver that you'd like to use. Please follow my instructions in
+[this bug report](https://github.com/floquation/OF-kva_interfaceProperties/issues/2).
+This is a step that should not be required, but it _is_ required for the present version of the code.
+I am working on resolving this matter.
+
+__And then you're done!__ You can stop reading this section, unless you want to know more.
 
 ### Where did it install the code?
 
