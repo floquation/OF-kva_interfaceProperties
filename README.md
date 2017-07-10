@@ -184,12 +184,20 @@ For example, a Segmentation Fault while running the code.
 Please make sure that the case that you use _does_ work for the original solver
 as to ensure that kva_interfaceProperties is the problem.
 
+## Recommended Read
+[Deshpande et al.[3]](http://dx.doi.org/10.1088/1749-4699/5/1/014016) have evaluated the performance
+of the interFoam solver.
+The paper contains many important hints for anyone using interFoam, like
+the capillary time step constraint.
+Without it, your simulation could very well become non-physical, despite it converging.
+
 ## References
 
 [1] Lafaurie B, Nardone C, Scardovelli R, Zaleski S, Zanetti G. Modelling merging and fragmentation in multiphase ﬂows with surfer. J Comput Phys 1994;113:134–47.
 
 [2] Hoang DA, van Steijn V, Portela LM, Kreutzer MT, Kleijn CR. Benchmark numerical simulations of segmented two-phase flows in microchannels using the Volume of Fluid method. J Computers & Fluids 2013;86:28-36
 
+[3] Deshpande, S. S., Anumolu, L., & Trujillo, M. F. (2012). Evaluating the performance of the two-phase flow solver interFoam. Computational science & discovery, 5(1), 014016.
 
 ## About the author
 
