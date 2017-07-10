@@ -45,7 +45,8 @@ wmake
 
 ### Recompile your solver
 
-Finally, it is also necessary to recompile the solver that you'd like to use.
+Finally, it is also necessary to recompile the solver that you'd like to use (or rather, to link your solver against
+my kva_interfaceProperties library).
 This library comes with a script that can automatically do this for you (on UNIX).
 
 #### Using the script
@@ -65,27 +66,42 @@ Then, run the "get" script followed by the "make" script:
 ```bash
 ./Allget && ./Allwmake
 ```
+(_Explanation of what this does if you're interested_: the "get" script obtains a copy of the "Make" folder of every solver
+specified in the "list_of_solvers" file. Then, "Make/files" and "Make/options" are modified
+such that they refer to the original solver's source code (i.e., the source code is not copied),
+and such that the new solver is linked against my kva_interfaceProperties library.
+Finally, the "make" script compiles all these solvers, which effectively is recompiling your solvers
+with an optional different name. These new solvers are put in $FOAM_USER_APPBIN.
+I recommend using a different name, as the recompiled solver may potentially overwrite
+your original solver if your original solver also resides in $FOAM_USER_APPBIN.)
+
 Now verify that all your (recompiled) solvers are indeed located in the directory $FOAM_USER_APPBIN:
 ```bash
 ls $FOAM_USER_APPBIN
 ```
 
-Then, to use the newly build solver, you must relog; or you can simply type the following (replace "interFoam" by the name of your solver; repeat for every solver):
+Then, to use the newly build solver, you must relog; or you can simply type the following
+(replace "interFoam" by the name of your solver; repeat for every solver). This is equivalent to what relogging would do:
 ```bash
 hash interFoam
 ```
 
-If something did not work, feel free to ask, or continue with the "doing it yourself" instructions.
+If something did not work, feel free to ask (see the "Support" section below),
+or continue with the "doing it yourself" instructions in case you cannot use the UNIX script.
 
 #### Doing it yourself
 To recompile the solver yourself, you have to edit the Make/files and Make/options files from the solver's source directory.
-(You might want to copy the solver, rather than modifying the original solver! That's what the automatic script above does as well.)
+(You might want to copy the solver, rather than modifying the original solver!
+That's what the automatic script above does as well.
+I also recommend renaming the recompiled solver, from e.g. "interFoam" to "kva_interFoam".
+Then you can distinguish between the original solver, and the solver that uses kva_interfaceProperties.)
 Please follow my instructions in
 [this bug report](https://github.com/floquation/OF-kva_interfaceProperties/issues/2)
-for a step-by-step guide for what should be changed.
+for a step-by-step guide of what should be changed.
+(Or open the bash script "recompileSolvers/getSolverMake.sh" and try to make sense of what it changes.)
 
 #### Installation successful!
-__And then you're done!__ You can stop reading this section, unless you want to know more.
+And then you're done! You can stop reading this section, unless you want to know more.
 
 ### Where did it install the code?
 
@@ -158,7 +174,15 @@ This will ensure that in the absence of this keyword, the library will operate i
 as if kva_interfaceProperties was not there.
 
 ## Support
+You may ask questions in this topic on the CFD forum:
 https://www.cfd-online.com/Forums/openfoam-verification-validation/124363-interfoam-validation-bubble-droplet-flows-microfluidics.html#post650088
+That is most suitable for generic questions.
+
+Or you can add a bug report under "Issues" on GitHub.
+That is most suitable for errors that should not occur, i.e. bugs.
+For example, a Segmentation Fault while running the code.
+Please make sure that the case that you use _does_ work for the original solver
+as to ensure that kva_interfaceProperties is the problem.
 
 ## References
 
