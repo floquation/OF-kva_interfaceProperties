@@ -2,3 +2,5 @@ lnInclude/
 Make/linux*
 .nfs*
 *.swp
+
+recompileSolvers/*/

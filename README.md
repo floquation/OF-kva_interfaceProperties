@@ -24,6 +24,8 @@ as kva_interfaceProperties merely overrides OF's interfaceProperties' behaviour:
 
 ## Installation
 
+### Compile kva_interfaceProperties
+
 Source your OpenFOAM installation and go to an appropriate location (you may choose a different location if you like).
 ```bash
 of40
@@ -41,31 +43,69 @@ Simply compile the code
 wmake
 ```
 
-Finally, it is also necessary to recompile the solver that you'd like to use. Please follow my instructions in
-[this bug report](https://github.com/floquation/OF-kva_interfaceProperties/issues/2).
-This is a step that should not be required, but it _is_ required for the present version of the code.
-I am working on resolving this matter.
+### Recompile your solver
 
+Finally, it is also necessary to recompile the solver that you'd like to use.
+This library comes with a script that can automatically do this for you (on UNIX).
+
+#### Using the script
+You can use this script as follows:
+```bash
+cd recompileSolvers
+```
+Open the file "list_of_solvers", and specify the FULL PATH to the solvers you wish to recompile (one solver per line).
+You may optionally add a new name for each solver.
+"list_of_solvers" might then look like:
+```bash
+# FULL_PATH_to_solver; optional_new_solver_name
+$FOAM_SOLVERS/multiphase/interFoam; kva_interFoam
+$FOAM_SOLVERS/multiphase/interFoam/interDyMFoam; kva_interDyMFoam
+```
+Then, run the "get" script followed by the "make" script:
+```bash
+./Allget && ./Allwmake
+```
+Now verify that all your (recompiled) solvers are indeed located in the directory $FOAM_USER_APPBIN:
+```bash
+ls $FOAM_USER_APPBIN
+```
+
+Then, to use the newly build solver, you must relog; or you can simply type the following (replace "interFoam" by the name of your solver; repeat for every solver):
+```bash
+hash interFoam
+```
+
+If something did not work, feel free to ask, or continue with the "doing it yourself" instructions.
+
+#### Doing it yourself
+To recompile the solver yourself, you have to edit the Make/files and Make/options files from the solver's source directory.
+(You might want to copy the solver, rather than modifying the original solver! That's what the automatic script above does as well.)
+Please follow my instructions in
+[this bug report](https://github.com/floquation/OF-kva_interfaceProperties/issues/2)
+for a step-by-step guide for what should be changed.
+
+#### Installation successful!
 __And then you're done!__ You can stop reading this section, unless you want to know more.
 
 ### Where did it install the code?
 
-The code was installed in $FOAM_USER_LIBBIN, which is OF's standard location for installing user-modified libraries.
+The code (kva_interfaceProperties) was installed in $FOAM_USER_LIBBIN, which is OF's standard location for installing user-modified libraries.
 This location may be seen in "Make/files", just like any other OpenFOAM library.
 
-The name of the library is "libinterfaceProperties.so", which is the exact same name as OF's interfaceProperties library.
-As a consequence, when you execute your solver, it will find kva_interfaceProperties in $FOAM_USER_LIBBIN
+The name of the library is "libkva_interfaceProperties.so".
+Your recompiled solver is linked against this library, and the library has precedence over OF's original "libinterfaceProperties.so".
+Therefore, when you execute your recompiled solver, it will find kva_interfaceProperties in $FOAM_USER_LIBBIN
 before finding interfaceProperties in $FOAM_LIBBIN.
-Therefore, this modified library will be dynamically linked when your solver is executed,
-overriding the behaviour of OF's interfaceProperties in the process. If you wish, you can check which dynamic library is used by your solver using the following command:
+Then, it will use kva_interfaceProperties' code --> kva_interfaceProperties will be dynamically linked,
+overriding the behaviour of OF's interfaceProperties in the process. If you wish, you can check which dynamic library is used by your solver using the following command (modify for your solver name):
 ```bash
 ldd $(which interFoam) | grep "interfaceProperties"
 ```
 
 The main advantage of this method is that you can use it with any solver that relies on OF's interfaceProperties library
-(interFoam, interDyMFoam, ...), without _any_ effort!
+(interFoam, interDyMFoam, ...), without _any_ effort! That is, you do not have to change the source code of your solver!
 It simply works. That is a _huge_ advantage to me, which also makes it easier to port to newer versions of OF.
-The disadvantage is that it, therefore, must use the very same name as OF's interfaceProperties.
+So far, I have not spotted a disadvantage of using this methodology.
 
 #### Doesn't that conflict with my (old) existing case?
 
@@ -82,7 +122,7 @@ to inform you about which curvature model is being used.
 Well, you can always just copy/move the library to a different directory (e.g. your case) if that makes you happier
 (but why would you...?).
 Then, in order to use it, make sure that its location is added to your LD_LIBRARY_PATH environmental variable
-when you execute your solver. For example (assumming libinterfaceProperties.so was moved to your system directory):
+when you execute your solver. For example (assumming libkva_interfaceProperties.so was moved to your system directory):
 ```bash
 LD_LIBRARY_PATH=./system:$LD_LIBRARY_PATH
 interFoam
@@ -117,6 +157,8 @@ If the entry "curvatureModel" is missing, "normal" is assumed.
 This will ensure that in the absence of this keyword, the library will operate in OpenFOAM's "normal" modus,
 as if kva_interfaceProperties was not there.
 
+## Support
+https://www.cfd-online.com/Forums/openfoam-verification-validation/124363-interfoam-validation-bubble-droplet-flows-microfluidics.html#post650088
 
 ## References
 

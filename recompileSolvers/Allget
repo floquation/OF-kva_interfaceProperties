@@ -1,0 +1,72 @@
+#! /usr/bin/sh
+#
+# @Author: Kevin van As, PhD student at TU Delft
+# @Date: 27/06/2017
+#
+# This script will obtain the "Make" directory from your solver,
+# and then alter Make/files and Make/options such that your solver
+# may be recompiled without copying the source of your solver,
+# and linked with the kva_interfaceProperties library.
+# The advantage of not copying your source code, is that you can
+# easily make changes to your solver, while not having to keep
+# this copy of your solver in sync.
+# Then you can recompile this copy at any time by just a simple "wmake" call.
+#
+# Your solvers should be specified in the file "list_of_solvers", which has the following format:
+# # Please use the following format to list your solvers:
+# # FULL_PATH_to_solver; optional_new_solver_name
+# $FOAM_SOLVERS/multiphase/interFoam
+# $FOAM_SOLVERS/multiphase/interFoam/interDyMFoam; my_interDyMFoam
+#
+
+#/*********************\
+#|                     |
+#| Do NOT touch below. | Unless you are a hacker, of course.
+#|                     |
+#\*********************/
+
+## Work from this directory
+cd "$(dirname "$0")"
+
+## Read solvers from file "list_of_solvers"
+i=0
+oldsolverPATH=()
+newsolverNAME=()
+while read p; do
+	# Skip commented lines
+	commentRegex="^#"
+	if [[ "$p" =~ $commentRegex ]]; then
+		continue
+	fi
+	# Separate data by ";"
+	IFS=';'; arrIN=($p); unset IFS;
+	oldsolverPATH[$i]=$(eval echo "${arrIN[0]}") # "eval" evaluates eventual environmental variables that were used as part of the full path
+	newsolverNAME[$i]=$(echo "${arrIN[1]}" | sed -r 's/^\s*(.+)\s*$/\1/') # trim trailing whitespace
+	# Finish loop iteration
+	unset arrIN
+	i=$((i+1))
+done < list_of_solvers
+unset i
+
+## Check:
+#echo "Summary:"
+#i=0
+#for item in ${oldsolverPATH[@]}
+#do
+#	echo $item
+#	echo ${newsolverNAME[i]}
+#	i=$((i+1))
+#done
+
+## For each specified solver, call get "getSolverMake.sh" script.
+i=0
+for item in ${oldsolverPATH[@]}
+do
+	echo "Now getting solver \"$item\" (${newsolverNAME[i]}):"
+	./getSolverMake.sh "$item" "${newsolverNAME[i]}"
+	i=$((i+1))
+done
+unset i
+
+
+#EOF
