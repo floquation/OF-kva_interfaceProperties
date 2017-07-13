@@ -131,6 +131,13 @@ Foam::interfaceProperties::interfaceProperties
     ),
     sigma_("sigma", dimensionSet(1, 0, -2, 0, 0), dict),
 
+	rho1_("rho", dimDensity,
+		transportPropertiesDict_.subDict( wordList(transportPropertiesDict_.lookup("phases"))[0] )
+	),
+	rho2_("rho", dimDensity,
+		transportPropertiesDict_.subDict( wordList(transportPropertiesDict_.lookup("phases"))[1] )
+	),
+
     deltaN_
     (
         "deltaN",
@@ -176,6 +183,7 @@ Foam::interfaceProperties::interfaceProperties
 	// In the present implementation, it is *AT LEAST* crucial that "transportPropertiesDict_" is constructed,
 	//  because curvatureModel will access it in its constructor.
 {
+	readSurfaceTensionModel(); // KVA
     calculateK(); // KVA warning: "curvatureModel_" MUST be constructed before this line.
 }
 
@@ -185,7 +193,17 @@ Foam::interfaceProperties::interfaceProperties
 Foam::tmp<Foam::surfaceScalarField>
 Foam::interfaceProperties::surfaceTensionForce() const
 {
-    return fvc::interpolate(sigmaK())*fvc::snGrad(alpha1_);
+	if(densityWeighted_){ // KVA: Added a switch to select between the density-weighted surfaceTensionForce calculation and OF's default one.
+		const volScalarField limitedAlpha1
+		(
+			min(max(alpha1_, scalar(0)), scalar(1))
+		);
+
+		const volScalarField rho(limitedAlpha1*rho1_ + (scalar(1) - limitedAlpha1)*rho2_);
+		return fvc::interpolate(sigmaK()*rho)*fvc::snGrad(alpha1_) * 2/(rho1_+rho2_);
+	}else{
+        return fvc::interpolate(sigmaK())*fvc::snGrad(alpha1_);
+	}
 }
 
 
@@ -201,7 +219,34 @@ bool Foam::interfaceProperties::read()
     alpha1_.mesh().solverDict(alpha1_.name()).lookup("cAlpha") >> cAlpha_;
     transportPropertiesDict_.lookup("sigma") >> sigma_;
 
+    transportPropertiesDict_.subDict( wordList(transportPropertiesDict_.lookup("phases"))[0] ).lookup("rho") >> rho1_; // KVA
+    transportPropertiesDict_.subDict( wordList(transportPropertiesDict_.lookup("phases"))[1] ).lookup("rho") >> rho2_; // KVA
+
+    bool result = readSurfaceTensionModel(); // KVA
+
     curvatureModel_->read(); // KVA
+
+    return result && true;
+}
+
+bool Foam::interfaceProperties::readSurfaceTensionModel() // KVA
+{
+    if(transportPropertiesDict_.found("surfaceTensionForceModel")){
+    	const dictionary& stfDict = transportPropertiesDict_.subDict("surfaceTensionForceModel");
+
+        if(!stfDict.found("densityWeighted")){
+    		WarningInFunction
+    			<< "Keyword \"densityWeighted\" not found in surfaceTensionForceModel subdictionary." << nl
+    			<< "    " << "Selecting default value " << false << " instead." << endl;
+    	}
+    	densityWeighted_ = stfDict.lookupOrDefault("densityWeighted",false);
+    }else{
+		WarningInFunction
+			<< "Subdictionary surfaceTensionForceModel not found. Selecting the following default values instead:" << nl
+			<< "    " << "densityWeighted = " << false << endl;
+    	densityWeighted_ = false;
+    }
+    Info<< "Selecting surfaceTensionModel CSF(densityWeighted=" << densityWeighted_ << ")" << endl;
 
     return true;
 }

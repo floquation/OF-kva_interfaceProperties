@@ -175,7 +175,7 @@ void Foam::curvatureModels::vofsmooth::calculateK(volScalarField& K, surfaceScal
 
 bool Foam::curvatureModels::vofsmooth::read()
 {
-	Info << "kva: curvatureModels::vofsmooth::read();" << endl;
+//	Info << "kva: curvatureModels::vofsmooth::read();" << endl;
 
 	// Always call the parent first
     bool result = curvatureModel::read(this->type());

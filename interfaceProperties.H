@@ -38,6 +38,10 @@ KVA_Modifications
 	.C: Removed some #includes, as now curvatureModel's child's .C needs those.
 	.C: Forward the read() call to the curvatureModel.
 
+    .H/.C: Added rho1_ and rho2_ to constructor/read
+    .C: Added densityWeighted surface tension calculation to "surfaceTensionForce()".
+    .H/.C: Added "densityWeighted_" switch as private variable and in read method
+
 SourceFiles
     interfaceProperties.C
 
@@ -74,6 +78,11 @@ class interfaceProperties
 
         //- Surface tension
         dimensionedScalar sigma_;
+    	bool densityWeighted_ = false; // KVA
+
+        //- Density // KVA: For simplicity sake, assume immiscible such that rho = alpha * rho1_ + (1-alpha) * rho2_
+        dimensionedScalar rho1_; // KVA
+        dimensionedScalar rho2_; // KVA
 
         //- Stabilisation for normalisation of the interface normal
         const dimensionedScalar deltaN_;
@@ -105,6 +114,7 @@ class interfaceProperties
         //- Re-calculate the interface curvature
         void calculateK();
 
+        bool readSurfaceTensionModel(); // KVA
 
 public:
 

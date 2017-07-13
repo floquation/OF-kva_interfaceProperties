@@ -124,7 +124,7 @@ Foam::autoPtr<Foam::curvatureModel> Foam::curvatureModel::New
 
 bool Foam::curvatureModel::read(const word& childType)
 {
-	Info << "kva: curvatureModel::read(" << childType << ");" << endl;
+//	Info << "kva: curvatureModel::read(" << childType << ");" << endl;
 
 	if (childType != "normal"){ // Normal does not need a coeffsDict. Do not enforce is for backwards compatibility.
 		coeffsDict_ = interfaceProperties_.transportPropertiesDict_.subDict(childType + "Coeffs");

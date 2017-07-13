@@ -40,6 +40,10 @@ vofsmoothCoeffs
 {
     numSmoothingIterations 2; // If absent default: 2
 }
+
+surfaceTensionForceModel{
+    densityWeighted         yes;
+}
 \* kva_interfaceProperties */
 
 
