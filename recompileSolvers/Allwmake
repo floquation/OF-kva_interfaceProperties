@@ -1,0 +1,30 @@
+#! /usr/bin/sh
+#
+# @Author: Kevin van As, PhD student at TU Delft
+# @Date: 27/06/2017
+#
+# Compile this copy of your solver. Simply calls "wmake".
+#
+
+
+
+#/*********************\
+#|                     |
+#| Do NOT touch below. | Unless you are a hacker, of course.
+#|                     |
+#\*********************/
+
+## Work from this directory
+cd "$(dirname "$0")"
+
+## Detect solvers and build them
+for dir in ./*
+do
+	if [ -d "$dir/Make" ]; then
+		cd "$dir" > /dev/null
+		# Compile from scratch
+		wclean && wmake
+		cd - > /dev/null
+	fi
+done
+

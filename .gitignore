@@ -3,3 +3,4 @@ Make/linux*
 .nfs*
 *.swp
 
+recompileSolvers/*/
