@@ -1,7 +1,7 @@
 /*--------------------------------*- C++ -*----------------------------------*\
 | =========                 |                                                 |
 | \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
-|  \\    /   O peration     | Version:  4.0                                   |
+|  \\    /   O peration     | Version:  5                                     |
 |   \\  /    A nd           | Web:      www.OpenFOAM.org                      |
 |    \\/     M anipulation  |                                                 |
 \*---------------------------------------------------------------------------*/
@@ -20,18 +20,18 @@ phases (water air);
 water
 {
     transportModel  Newtonian;
-    nu              [ 0 2 -1 0 0 0 0 ] 0.0608;
-    rho             [ 1 -3 0 0 0 0 0 ] 1000;
+    nu              0.0608;
+    rho             1000;
 }
 
 air
 {
     transportModel  Newtonian;
-    nu              [ 0 2 -1 0 0 0 0 ] 0.0608;
-    rho             [ 1 -3 0 0 0 0 0 ] 1;
+    nu              0.0608;
+    rho             1;
 }
 
-sigma           [ 1 0 -2 0 0 0 0 ] 1111;
+sigma           1111;
 
 
 /* kva_interfaceProperties  *\
@@ -42,7 +42,7 @@ vofsmoothCoeffs
 }
 
 surfaceTensionForceModel{
-    densityWeighted         yes;
+    densityWeighted         no; // If absent default: no (for my case I found density-weighting to _increase_ spurious currents)
 }
 \* kva_interfaceProperties */
 
