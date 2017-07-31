@@ -37,6 +37,7 @@
 									<listOptionValue builtIn="false" value="&quot;${FOAM_SRC}/transportModels/twoPhaseMixture/lnInclude&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${FOAM_SRC}/transportModels/twoPhaseProperties/lnInclude&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/kva_interfaceProperties}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${FOAM_SRC}/transportModels/interfaceProperties/lnInclude&quot;"/>
 								</option>
 								<option id="gnu.cpp.compiler.option.include.files.607748979" name="Include files (-include)" superClass="gnu.cpp.compiler.option.include.files" valueType="includeFiles">
 									<listOptionValue builtIn="false" value="&quot;${FOAM_SRC}/OpenFOAM/lnInclude/createTime.H&quot;"/>

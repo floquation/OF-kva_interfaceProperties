@@ -109,13 +109,17 @@ fi
 sed -i -r 's/-I\.\./-I'"$solverPATH2"'\/../g' "Make/options"
 
 ## Insert the solver directory as include search path (-I) 
+## And add the lnInclude of kva_interfaceProperties (../../lnInclude)
 linenum_INC=$( grep -n -E ".*_INC\s*=\s*"  "Make/options" | sed -r 's/([0-9]+):.*/\1/')
 head -n$linenum_INC "Make/options" > Make/options2
 echo "    -I$solverPATH \\" >> Make/options2
+echo "    -I../../lnInclude \\" >> Make/options2
 tail -n+$((linenum_INC+1)) "Make/options" >> Make/options2
-## And replace the reference to interfaceProperties to kva_interfaceProperties
-#    "-I$(LIB_SRC)/transportModels/interfaceProperties/lnInclude \" --> "../../lnInclude \"
-sed -i -r 's/-I.*interfaceProperties(\/lnInclude .*)/-I..\/..\1/' "Make/options2"
+# Note: we don't have to remove OF's interfaceProperties/lnInclude.
+# In fact, we need it because of "surfaceTensionModels".
+# We only have to make sure that "../../lnInclude" appears before it, we it does, as we just added "../../lnInclude" to the top!
+ #    "-I$(LIB_SRC)/transportModels/interfaceProperties/lnInclude \" --> "../../lnInclude \"
+ #sed -i -r 's/-I.*interfaceProperties(\/lnInclude .*)/-I..\/..\1/' "Make/options2"
 ## Then apply these changes to the main file
 mv "Make/options2" "Make/options"
 

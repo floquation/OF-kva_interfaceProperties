@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2011-2016 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2011-2017 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -129,7 +129,8 @@ Foam::interfaceProperties::interfaceProperties
             alpha1.mesh().solverDict(alpha1.name()).lookup("cAlpha")
         )
     ),
-    sigma_("sigma", dimensionSet(1, 0, -2, 0, 0), dict),
+
+    sigmaPtr_(surfaceTensionModel::New(dict, alpha1.mesh())),
 
     deltaN_
     (
@@ -182,6 +183,12 @@ Foam::interfaceProperties::interfaceProperties
 
 // * * * * * * * * * * * * * * Member Functions  * * * * * * * * * * * * * * //
 
+Foam::tmp<Foam::volScalarField>
+Foam::interfaceProperties::sigmaK() const
+{
+    return sigmaPtr_->sigma()*K_;
+}
+
 Foam::tmp<Foam::surfaceScalarField>
 Foam::interfaceProperties::surfaceTensionForce() const
 {
@@ -192,14 +199,20 @@ Foam::interfaceProperties::surfaceTensionForce() const
 Foam::tmp<Foam::volScalarField>
 Foam::interfaceProperties::nearInterface() const
 {
-    return pos(alpha1_ - 0.01)*pos(0.99 - alpha1_);
+    return pos0(alpha1_ - 0.01)*pos0(0.99 - alpha1_);
+}
+
+
+void Foam::interfaceProperties::correct()
+{
+    calculateK();
 }
 
 
 bool Foam::interfaceProperties::read()
 {
     alpha1_.mesh().solverDict(alpha1_.name()).lookup("cAlpha") >> cAlpha_;
-    transportPropertiesDict_.lookup("sigma") >> sigma_;
+    sigmaPtr_->readDict(transportPropertiesDict_);
 
     curvatureModel_->read(); // KVA
 
