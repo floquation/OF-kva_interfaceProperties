@@ -8,7 +8,8 @@ Current options are:
 
 ## OpenFOAM version support
 
-Tested with OF40 and OF41.
+Tested with OF40, OF41 and OF50.
+(Disclaimer: no thorough tests have been performed for OF50.)
 
 ## OpenFOAM solvers support
 
@@ -38,7 +39,13 @@ git clone https://github.com/floquation/OF-kva_interfaceProperties
 mv OF-kva_interfaceProperties kva_interfaceProperties
 cd kva_interfaceProperties
 ```
-Simply compile the code
+Then choose the correct branch amongst these options:
+```bash
+git checkout of40
+git checkout of50
+```
+
+Then all that's left is to compile the code:
 ```bash
 wmake
 ```
@@ -54,7 +61,7 @@ You can use this script as follows:
 ```bash
 cd recompileSolvers
 ```
-Open the file "list_of_solvers", and specify the FULL PATH to the solvers you wish to recompile (one solver per line).
+Open the file "list_of_solvers", and specify the FULL/PATH to the solvers you wish to recompile (one solver per line).
 You may optionally add a new name for each solver.
 "list_of_solvers" might then look like:
 ```bash
@@ -81,7 +88,7 @@ ls $FOAM_USER_APPBIN
 ```
 
 Then, to use the newly build solver, you must relog; or you can simply type the following
-(replace "interFoam" by the name of your solver; repeat for every solver). This is equivalent to what relogging would do:
+(replace "interFoam" by the name of your (new) solver; repeat for every solver). This is equivalent to what relogging would do:
 ```bash
 hash interFoam
 ```
@@ -137,6 +144,9 @@ to inform you about which curvature model is being used.
 
 Well, you can always just copy/move the library to a different directory (e.g. your case) if that makes you happier
 (but why would you...?).
+You'll still have to recompile your solver, so make sure you correctly compile it against the right library version.
+This is difficult if you keep a different copy in every case.
+
 Then, in order to use it, make sure that its location is added to your LD_LIBRARY_PATH environmental variable
 when you execute your solver. For example (assumming libkva_interfaceProperties.so was moved to your system directory):
 ```bash
@@ -189,7 +199,7 @@ as to ensure that kva_interfaceProperties is the problem.
 of the interFoam solver.
 The paper contains many important hints for anyone using interFoam, like
 the capillary time step constraint.
-Without it, your simulation could very well become non-physical, despite it converging.
+Without it, your simulation could very well become non-physical, despite it converging!
 
 ## References
 
