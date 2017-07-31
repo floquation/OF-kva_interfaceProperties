@@ -42,7 +42,7 @@ vofsmoothCoeffs
 }
 
 surfaceTensionForceModel{
-    densityWeighted         yes;
+    densityWeighted         no; // If absent default: no (for my case I found density-weighting to _increase_ spurious currents)
 }
 \* kva_interfaceProperties */
 
