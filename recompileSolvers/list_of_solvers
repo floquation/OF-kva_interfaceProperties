@@ -1,6 +1,6 @@
 # Please use the following format to list your solvers:
 # FULL_PATH_to_solver; optional_new_solver_name
 # In this example, interFoam is recompiled without a namechange, whereas interDyMFoam is recompiled using a different name.
-$FOAM_SOLVERS/multiphase/interFoam
-$FOAM_SOLVERS/multiphase/interFoam/interDyMFoam; kva_interDyMFoam
+$FOAM_SOLVERS/multiphase/interFoam; kva_interFoam
+#$FOAM_SOLVERS/multiphase/interFoam/interDyMFoam; 
 

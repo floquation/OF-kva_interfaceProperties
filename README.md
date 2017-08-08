@@ -47,6 +47,7 @@ git checkout of50
 
 Then all that's left is to compile the code:
 ```bash
+cd src
 wmake
 ```
 

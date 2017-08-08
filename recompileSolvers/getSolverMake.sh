@@ -114,8 +114,8 @@ head -n$linenum_INC "Make/options" > Make/options2
 echo "    -I$solverPATH \\" >> Make/options2
 tail -n+$((linenum_INC+1)) "Make/options" >> Make/options2
 ## And replace the reference to interfaceProperties to kva_interfaceProperties
-#    "-I$(LIB_SRC)/transportModels/interfaceProperties/lnInclude \" --> "../../lnInclude \"
-sed -i -r 's/-I.*interfaceProperties(\/lnInclude .*)/-I..\/..\1/' "Make/options2"
+#    "-I$(LIB_SRC)/transportModels/interfaceProperties/lnInclude \" --> "../../src/lnInclude \"
+sed -i -r 's/-I.*interfaceProperties(\/lnInclude .*)/-I..\/..\/src\1/' "Make/options2"
 ## Then apply these changes to the main file
 mv "Make/options2" "Make/options"
 
