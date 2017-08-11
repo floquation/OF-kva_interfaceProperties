@@ -47,62 +47,6 @@ namespace curvatureModels
 }
 }
 
-// * * * * * * * * * * * * Private Member Functions  * * * * * * * * * * * * //
-
-void Foam::curvatureModels::vofsmooth::smoothen
-(
-    volScalarField& smooth_func
-) const
-{
-    const fvMesh& mesh = smooth_func.mesh();
-    const surfaceVectorField& Sf = mesh.Sf();
-
-    const labelList& own = mesh.faceOwner();
-    const labelList& nei = mesh.faceNeighbour();
-
-    for(int iter = 0; iter < numSmoothingIterations_; iter++)
-    {
-    	scalarField smooth_cal(mesh.nCells(),scalar(0));
-
-    	scalarField sum_area(mesh.nCells(),scalar(0));
-
-		surfaceScalarField smoothF = fvc::interpolate(smooth_func);
-
-		for(int facei = 0; facei < nei.size(); facei++) //KVA note: should be own???
-		{
-			smooth_cal[own[facei]] += smoothF[facei]*mag(Sf[facei]);
-			sum_area[own[facei]] += mag(Sf[facei]);
-		}
-
-		forAll(nei,facei)
-		{
-			smooth_cal[nei[facei]] += smoothF[facei]*mag(Sf[facei]);
-			sum_area[nei[facei]] += mag(Sf[facei]);
-		}
-
-		forAll(mesh.boundary(), patchi)
-		{
-			const unallocLabelList& pFaceCells = mesh.boundary()[patchi].faceCells();
-
-			const fvsPatchScalarField& pssf = smoothF.boundaryField()[patchi];
-
-			forAll(mesh.boundary()[patchi], facei)
-			{
-			   smooth_cal[pFaceCells[facei]] += pssf[facei]*mag(Sf[facei]);
-			   sum_area[pFaceCells[facei]] += mag(Sf[facei]);
-			}
-		}
-
-		forAll(mesh.cells(),celli)
-		{
-			smooth_func[celli] = smooth_cal[celli]/sum_area[celli];
-		}
-
-		smooth_func.correctBoundaryConditions();
-
-    }
-}
-
 // * * * * * * * * * * * * * * * * Constructors  * * * * * * * * * * * * * * //
 
 Foam::curvatureModels::vofsmooth::vofsmooth
@@ -112,7 +56,13 @@ Foam::curvatureModels::vofsmooth::vofsmooth
 	const word& modelType
 )
 :
-	curvatureModel(name,interfaceProperties,modelType)
+	curvatureModel(name,interfaceProperties,modelType),
+	alphaSmoother_(
+			Foam::vofsmooth::smootherKernel<scalar>::New("alphaSmoother", coeffsDict_.lookup("smoothAlpha"), retrieve_alpha())
+	),
+	curvatureSmoother_(
+			Foam::vofsmooth::smootherKernel<scalar>::New("curvatureSmoother", coeffsDict_.lookup("smoothCurvature"), retrieve_alpha())
+	)
 {
     read(); // Note: parent's read is called twice, but that doesn't really matter.
 }
@@ -130,7 +80,8 @@ void Foam::curvatureModels::vofsmooth::calculateK(volScalarField& K, surfaceScal
 
 	// Define a smoothed version of the alpha field. Initialise it as a copy.
     volScalarField alpha1_smooth = alpha1;
-    smoothen(alpha1_smooth);
+    volScalarField doNotCompileThisPlease = alphaSmoother_->smoothen(alpha1_smooth);
+//    smoothen(alpha1_smooth);
 
 	// Cell gradient of alpha, based on the _smoothed_ alpha field.
 	const volVectorField gradAlpha(fvc::grad(alpha1_smooth, "nHat"));
@@ -157,6 +108,8 @@ void Foam::curvatureModels::vofsmooth::calculateK(volScalarField& K, surfaceScal
 	// Simple expression for curvature
 	K = -fvc::div(nHatf);
 
+	curvatureSmoother_->smoothen(K);
+
 	// Complex expression for curvature.
 	// Correction is formally zero but numerically non-zero.
 	/*
@@ -180,31 +133,7 @@ bool Foam::curvatureModels::vofsmooth::read()
 	// Always call the parent first
     bool result = curvatureModel::read(this->type());
 
-    // Read model parameters
-//    numSmoothingIterations_ = readInt(coeffsDict_.lookup("numSmoothingIterations"));
-    int numSmoothingIterationsDefault = 2;
-    numSmoothingIterations_ = coeffsDict_.lookupOrDefault<int>("numSmoothingIterations",numSmoothingIterationsDefault);
-
-    if(!coeffsDict_.found("numSmoothingIterations")){
-		WarningInFunction
-			<< "Keyword \"numSmoothingIterations\" not found in vofsmoothCoeffs subdictionary." << nl
-			<< "    " << "Selecting default value " << numSmoothingIterationsDefault << " instead." << endl;
-	}
-
-    if (numSmoothingIterations_ <= 0)
-    {
-    	if (numSmoothingIterations_ == 0){
-			WarningInFunction
-				<< "Specified numSmoothingIterations = 0." << nl
-				<< "    " << "Therefore \"vofsmooth\" will operate in \"normal\" mode without a smoother." << nl
-				<< "    " << "The recommended value is 2." << endl;
-    	}else{
-			WarningInFunction
-				<< "Specified numSmoothingIterations = " << numSmoothingIterations_ << "." << nl
-				<< "    " << "This value must be non-negative. Assuming the default value " << numSmoothingIterationsDefault << " instead." << endl;
-			numSmoothingIterations_ = numSmoothingIterationsDefault;
-    	}
-    }
+    // TODO: Construct new alphaSmoother_ and curvatureSmoother_?
 
     return result && true;
 }

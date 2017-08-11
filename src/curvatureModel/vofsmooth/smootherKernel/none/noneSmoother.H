@@ -22,76 +22,80 @@ License
     along with OpenFOAM.  If not, see <http://www.gnu.org/licenses/>.
 
 Class
-    Foam::curvatureModel::vofsmooth
+    Foam::vofsmooth::smootherKernels::none
 
 Description
     TODO
 
 SourceFiles
-    vofsmooth.C
+    none.C
 
 \*---------------------------------------------------------------------------*/
 
-#ifndef curvatureModel_vofsmooth_H
-#define curvatureModel_vofsmooth_H
+#ifndef vofsmooth_noneSmoother_H
+#define vofsmooth_noneSmoother_H
 
-#include "curvatureModel.H"
 #include "smootherKernel.H"
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
 namespace Foam
 {
-namespace curvatureModels
+namespace vofsmooth
 {
 
 /*---------------------------------------------------------------------------*\
                            Class normal Declaration
 \*---------------------------------------------------------------------------*/
 
-class vofsmooth
+template<class Type>
+class noneSmoother
 :
-    public curvatureModel
+    public smootherKernel<Type>
 {
     // Private data
 
-		autoPtr<Foam::vofsmooth::smootherKernel<scalar>> alphaSmoother_;
-		autoPtr<Foam::vofsmooth::smootherKernel<scalar>> curvatureSmoother_;
+	// Private Member Functions
 
 public:
 
     //- Runtime type information
-        TypeName("vofsmooth");
-
+        TypeName("none");
 
     // Constructors
 
         //- Construct from components
-        vofsmooth
+        noneSmoother
         (
-            const word& name,
-            const interfaceProperties& interfaceProperties,
-			const word& modelType
+			const word& name,
+			Istream& is,
+			const volScalarField& alpha
         );
 
 
     //- Destructor
-		~vofsmooth(){}
+		virtual ~noneSmoother(){}
 
 
     // Member Functions
 
-		void calculateK(volScalarField& K, surfaceScalarField& nHatf) const;
-
-        //- Read transportProperties dictionary
-        bool read();
+		virtual tmp<GeometricField<Type, fvPatchField, volMesh>> smoothen(const GeometricField<Type, fvPatchField, volMesh>& fld) const {
+			// Do nothing to "fld", because "none" does not do any smoothing.
+			return tmp<GeometricField<Type, fvPatchField, volMesh>>(fld);
+		}
 };
 
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
-} // End namespace curvatureModel
+} // End namespace vofsmooth
 } // End namespace Foam
+
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+#ifdef NoRepository
+    #include "noneSmoother.C"
+#endif
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 

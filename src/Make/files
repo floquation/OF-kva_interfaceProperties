@@ -1,7 +1,13 @@
 interfaceProperties.C
 
+
 curvatureModel/curvatureModel.C
 curvatureModel/normal/normal.C
+
+curvatureModel/vofsmooth/smootherKernel/smootherKernels.C
+curvatureModel/vofsmooth/smootherKernel/none/noneSmoothers.C
+curvatureModel/vofsmooth/smootherKernel/cfcInterpolation/cfcInterpolationSmoothers.C
 curvatureModel/vofsmooth/vofsmooth.C
+
 
 LIB = $(FOAM_USER_LIBBIN)/libkva_interfaceProperties

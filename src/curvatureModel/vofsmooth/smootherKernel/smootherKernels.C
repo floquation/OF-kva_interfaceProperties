@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2011-2015 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2011-2016 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -21,80 +21,39 @@ License
     You should have received a copy of the GNU General Public License
     along with OpenFOAM.  If not, see <http://www.gnu.org/licenses/>.
 
-Class
-    Foam::curvatureModel::vofsmooth
-
 Description
     TODO
 
-SourceFiles
-    vofsmooth.C
-
 \*---------------------------------------------------------------------------*/
 
-#ifndef curvatureModel_vofsmooth_H
-#define curvatureModel_vofsmooth_H
-
-#include "curvatureModel.H"
 #include "smootherKernel.H"
+#include "HashTable.H"
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
 namespace Foam
 {
-namespace curvatureModels
-{
-
-/*---------------------------------------------------------------------------*\
-                           Class normal Declaration
-\*---------------------------------------------------------------------------*/
-
-class vofsmooth
-:
-    public curvatureModel
-{
-    // Private data
-
-		autoPtr<Foam::vofsmooth::smootherKernel<scalar>> alphaSmoother_;
-		autoPtr<Foam::vofsmooth::smootherKernel<scalar>> curvatureSmoother_;
-
-public:
-
-    //- Runtime type information
-        TypeName("vofsmooth");
-
-
-    // Constructors
-
-        //- Construct from components
-        vofsmooth
-        (
-            const word& name,
-            const interfaceProperties& interfaceProperties,
-			const word& modelType
-        );
-
-
-    //- Destructor
-		~vofsmooth(){}
-
-
-    // Member Functions
-
-		void calculateK(volScalarField& K, surfaceScalarField& nHatf) const;
-
-        //- Read transportProperties dictionary
-        bool read();
-};
-
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
-} // End namespace curvatureModel
+namespace vofsmooth
+{
+
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+// Define the constructor function hash tables
+
+defineTemplateRunTimeSelectionTable(smootherKernel<scalar>, Istream);
+defineTemplateRunTimeSelectionTable(smootherKernel<vector>, Istream);
+defineTemplateRunTimeSelectionTable(smootherKernel<sphericalTensor>, Istream);
+defineTemplateRunTimeSelectionTable(smootherKernel<symmTensor>, Istream);
+defineTemplateRunTimeSelectionTable(smootherKernel<tensor>, Istream);
+
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+} // End namespace vofsmooth
+
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
 } // End namespace Foam
-
-// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
-
-#endif
 
 // ************************************************************************* //

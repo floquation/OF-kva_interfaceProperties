@@ -1,5 +1,6 @@
 lnInclude/
 Make/linux*
+src/Make/linux*
 .nfs*
 *.swp
 
