@@ -58,10 +58,12 @@ Foam::curvatureModels::vofsmooth::vofsmooth
 :
 	curvatureModel(name,interfaceProperties,modelType),
 	alphaSmoother_(
-			Foam::vofsmooth::smootherKernel<scalar>::New("alphaSmoother", coeffsDict_.lookup("smoothAlpha"), retrieve_alpha())
+//			Foam::vofsmooth::smootherKernel<scalar>::New("alphaSmoother", coeffsDict_.lookup("smoothAlpha"))
+			Foam::vofsmooth::smootherKernel<scalar>::New("alphaSmoother", coeffsDict_.subDict("smoothAlpha"))
 	),
 	curvatureSmoother_(
-			Foam::vofsmooth::smootherKernel<scalar>::New("curvatureSmoother", coeffsDict_.lookup("smoothCurvature"), retrieve_alpha())
+//			Foam::vofsmooth::smootherKernel<scalar>::New("curvatureSmoother", coeffsDict_.lookup("smoothCurvature"))
+			Foam::vofsmooth::smootherKernel<scalar>::New("curvatureSmoother", coeffsDict_.subDict("smoothCurvature"))
 	)
 {
     read(); // Note: parent's read is called twice, but that doesn't really matter.

@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2011-2015 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2011-2016 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -23,19 +23,70 @@ License
 
 \*---------------------------------------------------------------------------*/
 
+#include "unweighted.H"
+#include "addToRunTimeSelectionTable.H"
+
+// * * * * * * * * * * * * * * Static Data Members * * * * * * * * * * * * * //
+
+namespace Foam
+{
+namespace vofsmooth
+{
+namespace weightFactors
+{
+    defineTypeNameAndDebug(unweighted, 0);
+    addToRunTimeSelectionTable
+    (
+    	weightFactor,
+        unweighted,
+		Istream
+    );
+}
+}
+}
+
 // * * * * * * * * * * * * * * * * Constructors  * * * * * * * * * * * * * * //
 
-template<class Type>
-Foam::vofsmooth::noneSmoother<Type>::noneSmoother
+Foam::vofsmooth::weightFactors::unweighted::unweighted
 (
 	const word& name,
 	const dictionary& dict
-//	Istream& is
 )
 :
-	smootherKernel<Type>(name)
+	weightFactor(name)//,
+//	unitWeight(
+//		new volScalarField(
+//			IOobject
+//			(
+//				"one",
+//				mesh.time().timeName(), // instance; unneeded string?
+//				mesh, // db
+//				IOobject::NO_READ,
+//				IOobject::NO_WRITE
+//			),
+//			mesh,
+//			Foam::scalar(1)
+//		)
+//	)
 {
+	// Don't have to read anything from "is" for unweighted.
 }
+
+
+// * * * * * * * * * * * * * * * * Destructor  * * * * * * * * * * * * * * * //
+
+Foam::vofsmooth::weightFactors::unweighted::~unweighted()
+{}
+
+// * * * * * * * * * * * * * * Member Functions  * * * * * * * * * * * * * * //
+
+namespace Foam{
+
+tmp<volScalarField> vofsmooth::weightFactors::unweighted::weight(const fvMesh& mesh) const{
+	return tmp<volScalarField>(); // Return an empty field (actually, a null pointer to a volScalarField).
+}
+
+} // End namespace Foam
 
 
 // ************************************************************************* //

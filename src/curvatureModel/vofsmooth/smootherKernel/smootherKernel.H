@@ -84,25 +84,25 @@ public:
 			Istream,
 			(
 				const word& name,
-				Istream& is,
-				const volScalarField& alpha
+				const dictionary& dict
+//				Istream& is
 			),
-			(name, is, alpha)
+			(name, dict)
 		);
 
 
 	// Constructors
 
 		smootherKernel(
-			const word& name,
-			Istream& is,
-			const volScalarField& alpha
+			const word& name//,
+//			Istream& is
 		);
 
 	// Selectors
 
 		//- Select based on given type name
-		static autoPtr<smootherKernel<Type>> New(const word& name, Istream& is, const volScalarField& alpha);
+//		static autoPtr<smootherKernel<Type>> New(const word& name, Istream& is);
+		static autoPtr<smootherKernel<Type>> New(const word& name, const dictionary& dict);
 
     //- Destructor
 

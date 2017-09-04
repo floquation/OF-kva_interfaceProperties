@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2011-2015 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2011-2016 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -22,21 +22,21 @@ License
     along with OpenFOAM.  If not, see <http://www.gnu.org/licenses/>.
 
 Class
-    Foam::vofsmooth::smootherKernels::none
+    Foam::weightFactor
 
 Description
     TODO
 
 SourceFiles
-    none.C
+    weightFactor.C
 
 \*---------------------------------------------------------------------------*/
 
-#ifndef vofsmooth_cfcInterpolationSmoother_H
-#define vofsmooth_cfcInterpolationSmoother_H
+#ifndef vofsmooth_weightFactors_Raeini_H
+#define vofsmooth_weightFactors_Raeini_H
 
-#include "smootherKernel.H"
 #include "weightFactor.H"
+#include "autoPtr.H"
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
@@ -44,59 +44,53 @@ namespace Foam
 {
 namespace vofsmooth
 {
+namespace weightFactors
+{
+
 
 /*---------------------------------------------------------------------------*\
-                           Class normal Declaration
+                           Class weightFactor Declaration
 \*---------------------------------------------------------------------------*/
 
-template<class Type>
-class cfcInterpolationSmoother
+class Raeini
 :
-    public smootherKernel<Type>
+		public weightFactor
 {
-    // Private data
 
-		int numSmoothingIterations_;
-		autoPtr<weightFactor> weight_;
+	// Private data
 
-	// Private Member Functions
+		word alphaName_;
+//	autoPtr<volScalarField> alpha_;
+//	const volScalarField& alpha_;
 
 public:
 
     //- Runtime type information
-        TypeName("interpolate");
+        TypeName("Raeini");
 
-    // Constructors
+	// Constructors
 
-        //- Construct from components
-        cfcInterpolationSmoother
-        (
+		Raeini(
 			const word& name,
-			const dictionary & dict
-//			Istream& is
-        );
-
+			const dictionary& dict
+		);
 
     //- Destructor
-		virtual ~cfcInterpolationSmoother(){}
 
+		virtual ~Raeini();
 
     // Member Functions
 
-		virtual tmp<GeometricField<Type, fvPatchField, volMesh>> smoothen(const GeometricField<Type, fvPatchField, volMesh>& fld) const;
+		virtual tmp<volScalarField> weight(const fvMesh& mesh) const;
+
 };
 
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
+} // End namespace weightFactors
 } // End namespace vofsmooth
 } // End namespace Foam
-
-// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
-
-#ifdef NoRepository
-    #include "cfcInterpolationSmoother.C"
-#endif
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 

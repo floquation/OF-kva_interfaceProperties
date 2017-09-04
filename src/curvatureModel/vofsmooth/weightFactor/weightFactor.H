@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2011-2015 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2011-2016 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -22,21 +22,25 @@ License
     along with OpenFOAM.  If not, see <http://www.gnu.org/licenses/>.
 
 Class
-    Foam::vofsmooth::smootherKernels::none
+    Foam::weightFactor
 
 Description
     TODO
 
 SourceFiles
-    none.C
+    weightFactor.C
 
 \*---------------------------------------------------------------------------*/
 
-#ifndef vofsmooth_cfcInterpolationSmoother_H
-#define vofsmooth_cfcInterpolationSmoother_H
+#ifndef vofsmooth_weightFactor_H
+#define vofsmooth_weightFactor_H
 
-#include "smootherKernel.H"
-#include "weightFactor.H"
+#include "volFields.H"
+#include "typeInfo.H"
+#include "runTimeSelectionTables.H"
+//#include "GeometricFields.H"
+//#include "IOstreams.H"
+#include "tmp.H"
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
@@ -45,45 +49,68 @@ namespace Foam
 namespace vofsmooth
 {
 
+
 /*---------------------------------------------------------------------------*\
-                           Class normal Declaration
+                           Class weightFactor Declaration
 \*---------------------------------------------------------------------------*/
 
-template<class Type>
-class cfcInterpolationSmoother
-:
-    public smootherKernel<Type>
+class weightFactor
 {
-    // Private data
+    // Private Member Functions
 
-		int numSmoothingIterations_;
-		autoPtr<weightFactor> weight_;
+protected:
 
-	// Private Member Functions
+    // Protected data
+
+        word name_; // KVA: Added a name, like OpenFoam's "viscosityModel". I don't understand why.
 
 public:
 
     //- Runtime type information
-        TypeName("interpolate");
+        TypeName("weightFactor");
 
-    // Constructors
+    // Declare run-time constructor selection table
 
-        //- Construct from components
-        cfcInterpolationSmoother
-        (
-			const word& name,
-			const dictionary & dict
-//			Istream& is
-        );
+		declareRunTimeSelectionTable
+		(
+			autoPtr,
+			weightFactor,
+			Istream,
+			(
+				const word& name,
+				const dictionary& dict
+			),
+			(name, dict)
+		);
 
+
+	// Constructors
+
+		weightFactor(
+			const word& name
+		);
+
+	// Selectors
+
+		//- Select based on given type name
+		static autoPtr<weightFactor> New(const word& name, const dictionary& dict);
 
     //- Destructor
-		virtual ~cfcInterpolationSmoother(){}
 
+		virtual ~weightFactor();
 
     // Member Functions
 
-		virtual tmp<GeometricField<Type, fvPatchField, volMesh>> smoothen(const GeometricField<Type, fvPatchField, volMesh>& fld) const;
+		virtual tmp<volScalarField> weight(const fvMesh& mesh) const = 0;
+
+//		template<class Type> // KVA note: virtual method cannot be templated in C++. Instead, template the entire class.
+//		virtual void smoothen(GeometricField<Type, fvPatchField, volMesh>& fld) const = 0;
+//		virtual tmp<GeometricField<Type, fvPatchField, volMesh>> smoothen(const GeometricField<Type, fvPatchField, volMesh>& fld) const = 0;
+
+//		virtual GeometricField<Type, fvPatchField, volMesh> smoothen(GeometricField<Type, fvPatchField, volMesh>& fld) const{
+//			return fld;
+//		}
+
 };
 
 
@@ -91,12 +118,6 @@ public:
 
 } // End namespace vofsmooth
 } // End namespace Foam
-
-// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
-
-#ifdef NoRepository
-    #include "cfcInterpolationSmoother.C"
-#endif
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 

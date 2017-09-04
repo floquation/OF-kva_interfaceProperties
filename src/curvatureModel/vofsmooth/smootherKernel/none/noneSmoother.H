@@ -68,8 +68,8 @@ public:
         noneSmoother
         (
 			const word& name,
-			Istream& is,
-			const volScalarField& alpha
+			const dictionary& dict
+//			Istream& is
         );
 
 

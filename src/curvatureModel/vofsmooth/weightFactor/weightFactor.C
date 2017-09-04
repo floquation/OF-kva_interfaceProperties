@@ -23,66 +23,64 @@ License
 
 \*---------------------------------------------------------------------------*/
 
-#include "smootherKernel.H"
+#include "weightFactor.H"
 
 // * * * * * * * * * * * * * * Static Data Members * * * * * * * * * * * * * //
 
-//namespace Foam
-//{
-//	defineTypeNameAndDebug(smootherKernel, 0);
-//	defineRunTimeSelectionTable(smootherKernel, Istream);
-//}
+namespace Foam
+{
+namespace vofsmooth
+{
+	defineTypeNameAndDebug(weightFactor, 0);
+	defineRunTimeSelectionTable(weightFactor, Istream);
+}
+}
 
 // * * * * * * * * * * * * * * * * Constructors  * * * * * * * * * * * * * * //
 
-template<class Type>
-Foam::vofsmooth::smootherKernel<Type>::smootherKernel
+Foam::vofsmooth::weightFactor::weightFactor
 (
 	const word& name
 )
 :
-	name_(name)//,
-//	dict_(dict)
+	name_(name)
 {
-//	read();
 }
 
 
 // * * * * * * * * * * * * * * * * Destructor  * * * * * * * * * * * * * * * //
 
-template<class Type>
-Foam::vofsmooth::smootherKernel<Type>::~smootherKernel()
+Foam::vofsmooth::weightFactor::~weightFactor()
 {}
 
 
 // * * * * * * * * * * * * * * * * Selectors * * * * * * * * * * * * * * * * //
 
-template<class Type>
-Foam::autoPtr< Foam::vofsmooth::smootherKernel<Type> > Foam::vofsmooth::smootherKernel<Type>::New
+Foam::autoPtr< Foam::vofsmooth::weightFactor > Foam::vofsmooth::weightFactor::New
 (
 	const word& name,
 	const dictionary& dict
-//	Istream& is
 )
 {
-
-//	alpha.db().lookupObject<volScalarField>("kiwi");
-
-	// First entry of "is" is the modelType.
-    word modelType;
+//	// First entry of "is" is the modelType.
 //    token entry;
 //    is.read(entry);
+    word modelType;
 //    modelType = entry.wordToken();
-    modelType = dict.lookupOrDefault<word>("type","none");
+	modelType = dict.lookupOrDefault<word>("type","unweighted");
+    if(!dict.found("type")){
+		WarningInFunction
+			<< "Keyword \"type\" not found in dictionary. Using the default (unweighted) instead." << endl;
+    }
     // Next entries are the arguments to be passed to the constructor of modelType.
 
-    Info<< "Selecting smootherKernel " << modelType << " for " << name << endl;
+    Info<< "Selecting weightFactor " << modelType << " for " << name << endl;
 //    Info<< "label:" << readLabel(is) << endl;
 
     if (!IstreamConstructorTablePtr_)
     {
         FatalErrorInFunction
-            << "smootherKernel table is empty"
+            << "weightFactor table is empty"
             << exit(FatalError);
     }
 
@@ -96,36 +94,16 @@ Foam::autoPtr< Foam::vofsmooth::smootherKernel<Type> > Foam::vofsmooth::smoother
     if (cstrIter == IstreamConstructorTablePtr_->end())
     {
         FatalErrorInFunction
-            << "Unknown smootherKernel type "
+            << "Unknown weightFactor type "
             << modelType << nl << nl
-            << "Valid smootherKernel types are :" << endl
+            << "Valid weightFactor types are :" << endl
             << IstreamConstructorTablePtr_->sortedToc()
             << exit(FatalError);
     }
 
 //    Info<< "type found in table" << endl;
 
-
-    return autoPtr<smootherKernel>(cstrIter()(modelType+"("+name+")", dict));
+    return autoPtr<weightFactor>(cstrIter()(modelType+"("+name+")", dict));
 }
-
-// * * * * * * * * * * * * * * Member Functions  * * * * * * * * * * * * * * //
-
-
-
-//bool Foam::vofsmooth::smootherKernel::read()
-//{
-////    alpha1_.mesh().solverDict(alpha1_.name()).lookup("cAlpha") >> cAlpha_;
-////    transportPropertiesDict_.lookup("sigma") >> sigma_;
-////
-////    transportPropertiesDict_.subDict( wordList(transportPropertiesDict_.lookup("phases"))[0] ).lookup("rho") >> rho1_; // KVA
-////    transportPropertiesDict_.subDict( wordList(transportPropertiesDict_.lookup("phases"))[1] ).lookup("rho") >> rho2_; // KVA
-////
-////    bool result = readSurfaceTensionModel(); // KVA
-////
-////    curvatureModel_->read(); // KVA
-//
-//    return result && true;
-//}
 
 // ************************************************************************* //
