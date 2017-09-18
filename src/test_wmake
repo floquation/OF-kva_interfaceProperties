@@ -1,0 +1,2 @@
+#! /usr/bin/sh
+wmake && (cd ../recompileSolvers/kva_interFoam && 'rm' /net/users/kevinvanas/OpenFOAM/kevinvanas-4.0/platforms/linux64GccDPInt32Opt/bin/kva_interFoam && wmake; cd -)
