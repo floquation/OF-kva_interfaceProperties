@@ -22,73 +22,85 @@ License
     along with OpenFOAM.  If not, see <http://www.gnu.org/licenses/>.
 
 Class
-    Foam::curvatureModel::normal
+    Foam::vofsmooth::smootherKernels::none
 
 Description
     TODO
 
 SourceFiles
-    normal.C
+    none.C
 
 \*---------------------------------------------------------------------------*/
 
-#ifndef curvatureModel_normal_H
-#define curvatureModel_normal_H
+#ifndef vofsmooth_normalDirSmoother_H
+#define vofsmooth_normalDirSmoother_H
 
-#include "curvatureModel.H"
+#include "weightedSmootherKernel.H"
+#include "weightFactor.H"
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
 namespace Foam
 {
-namespace curvatureModels
+namespace vofsmooth
 {
 
 /*---------------------------------------------------------------------------*\
                            Class normal Declaration
 \*---------------------------------------------------------------------------*/
 
-class normal
+template<class Type>
+class normalDirSmoother
 :
-    public curvatureModel
+    public weightedSmootherKernel<Type>
 {
     // Private data
 
+		int numSmoothingIterations_;
+		autoPtr<Foam::vofsmooth::weightedSmootherKernel<Type>> smoother_;
+
+	// Private Member Functions
 
 public:
 
     //- Runtime type information
-        TypeName("normal");
-
+        TypeName("normalDir");
 
     // Constructors
 
         //- Construct from components
-        normal
+        normalDirSmoother
         (
-            const word& name,
-            const interfaceProperties& interfaceProperties,
-			const word& modelType
+			const word& name,
+			const dictionary & dict
+//			Istream& is
         );
 
 
     //- Destructor
-		~normal(){}
+		virtual ~normalDirSmoother(){}
 
 
     // Member Functions
 
-		void calculateK(volScalarField& K, surfaceScalarField& nHatf);
-
-        //- Read transportProperties dictionary
-        bool read();
+		virtual tmp<GeometricField<Type, fvPatchField, volMesh>> smoothen(const GeometricField<Type, fvPatchField, volMesh>& fld) const;
+		virtual tmp<GeometricField<Type, fvPatchField, volMesh>> smoothen(
+			const GeometricField<Type, fvPatchField, volMesh>& fld,
+			const tmp<volScalarField>& tweight
+		) const;
 };
 
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
-} // End namespace curvatureModel
+} // End namespace vofsmooth
 } // End namespace Foam
+
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+#ifdef NoRepository
+    #include "normalDirSmoother.C"
+#endif
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 

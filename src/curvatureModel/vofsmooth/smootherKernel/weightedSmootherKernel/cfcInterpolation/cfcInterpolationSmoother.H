@@ -35,8 +35,7 @@ SourceFiles
 #ifndef vofsmooth_cfcInterpolationSmoother_H
 #define vofsmooth_cfcInterpolationSmoother_H
 
-#include "smootherKernel.H"
-#include "weightFactor.H"
+#include "weightedSmootherKernel.H"
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
@@ -52,12 +51,11 @@ namespace vofsmooth
 template<class Type>
 class cfcInterpolationSmoother
 :
-    public smootherKernel<Type>
+    public weightedSmootherKernel<Type>
 {
     // Private data
 
 		int numSmoothingIterations_;
-		autoPtr<weightFactor> weight_;
 
 	// Private Member Functions
 
@@ -68,12 +66,19 @@ public:
 
     // Constructors
 
-        //- Construct from components
+        //- Construct from dictionary
         cfcInterpolationSmoother
         (
 			const word& name,
 			const dictionary & dict
-//			Istream& is
+        );
+
+        //- Construct from components
+        cfcInterpolationSmoother
+        (
+			const word& name,
+			int numIts,
+			weightFactor* weight
         );
 
 
@@ -84,6 +89,10 @@ public:
     // Member Functions
 
 		virtual tmp<GeometricField<Type, fvPatchField, volMesh>> smoothen(const GeometricField<Type, fvPatchField, volMesh>& fld) const;
+		virtual tmp<GeometricField<Type, fvPatchField, volMesh>> smoothen(
+			const GeometricField<Type, fvPatchField, volMesh>& fld,
+			const tmp<volScalarField>& tweight
+		) const;
 };
 
 

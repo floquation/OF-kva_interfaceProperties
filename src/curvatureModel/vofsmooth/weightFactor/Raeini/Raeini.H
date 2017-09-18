@@ -75,6 +75,11 @@ public:
 			const dictionary& dict
 		);
 
+		Raeini(
+			const word& name,
+			const word& alphaName
+		);
+
     //- Destructor
 
 		virtual ~Raeini();

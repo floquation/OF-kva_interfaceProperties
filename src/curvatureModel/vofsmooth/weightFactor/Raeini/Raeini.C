@@ -62,6 +62,17 @@ Foam::vofsmooth::weightFactors::Raeini::Raeini
 //    alphaName_ = entry.wordToken();
 }
 
+Foam::vofsmooth::weightFactors::Raeini::Raeini
+(
+	const word& name,
+	const word& alphaName
+)
+:
+	weightFactor(name),
+	alphaName_(alphaName)
+{
+}
+
 
 // * * * * * * * * * * * * * * * * Destructor  * * * * * * * * * * * * * * * //
 
@@ -75,15 +86,15 @@ namespace Foam{
 tmp<volScalarField> vofsmooth::weightFactors::Raeini::weight(const fvMesh& mesh) const{
 	// First lookup the required fields.
 	const volScalarField* alphaPtr;
-    if(mesh.foundObject<volScalarField>(alphaName_)){
+//    if(mesh.foundObject<volScalarField>(alphaName_)){
         alphaPtr = &mesh.lookupObject<volScalarField>(alphaName_);
-    }else{
+//    }else{
     	// Try a common name or error.
-    	alphaPtr = &mesh.lookupObject<volScalarField>("alpha");
-    }
+//    	alphaPtr = &mesh.lookupObject<volScalarField>("alpha");
+//    }
     const volScalarField& alpha = *alphaPtr;
 
-    Info << "(Raeini.C) alpha.instance() = " << alphaPtr->instance() << endl;
+//    Info << "(Raeini.C) alpha.instance() = " << alphaPtr->instance() << endl;
 
     // Limit alpha to prevent FPE
     const volScalarField limitedAlpha

@@ -8,7 +8,10 @@ curvatureModel/vofsmooth/weightFactor/Raeini/Raeini.C
 
 curvatureModel/vofsmooth/smootherKernel/smootherKernels.C
 curvatureModel/vofsmooth/smootherKernel/none/noneSmoothers.C
-curvatureModel/vofsmooth/smootherKernel/cfcInterpolation/cfcInterpolationSmoothers.C
+curvatureModel/vofsmooth/smootherKernel/Csk/cskSmoothers.C
+curvatureModel/vofsmooth/smootherKernel/weightedSmootherKernel/weightedSmootherKernels.C
+curvatureModel/vofsmooth/smootherKernel/weightedSmootherKernel/cfcInterpolation/cfcInterpolationSmoothers.C
+curvatureModel/vofsmooth/smootherKernel/weightedSmootherKernel/normalDir/normalDirSmoothers.C
 
 curvatureModel/vofsmooth/vofsmooth.C
 

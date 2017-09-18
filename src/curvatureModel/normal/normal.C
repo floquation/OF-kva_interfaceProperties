@@ -63,7 +63,7 @@ Foam::curvatureModels::normal::normal
 
 // * * * * * * * * * * * * * * Member Functions  * * * * * * * * * * * * * * //
 
-void Foam::curvatureModels::normal::calculateK(volScalarField& K, surfaceScalarField& nHatf) const
+void Foam::curvatureModels::normal::calculateK(volScalarField& K, surfaceScalarField& nHatf)
 {
 	const volScalarField& alpha1 = retrieve_alpha();
 	const dimensionedScalar& deltaN = retrieve_deltaN();

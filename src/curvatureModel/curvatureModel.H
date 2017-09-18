@@ -121,7 +121,7 @@ public:
 	// Member Functions
 
 		//- Forward curvature calculation to a child class
-		virtual void calculateK(volScalarField& K, surfaceScalarField& nHatf) const = 0;
+		virtual void calculateK(volScalarField& K, surfaceScalarField& nHatf) = 0;
 
         //- Read transportProperties.coeffs dictionary
         virtual bool read() = 0; // update all model parameters

@@ -31,6 +31,8 @@ License
 #include "fvcGrad.H"
 #include "fvcSnGrad.H"
 
+#include "regIOobject.H"
+
 // * * * * * * * * * * * * * * Static Data Members * * * * * * * * * * * * * //
 
 namespace Foam
@@ -47,6 +49,39 @@ namespace curvatureModels
 }
 }
 
+// * * * * * * * * * * * Private Member Functions  * * * * * * * * * * * * * //
+
+void Foam::curvatureModels::vofsmooth::smoothCurvature(volScalarField& K)
+{
+	Info << "(vofsmooth.C) smoothCurvature(" << K.name() << ")" << endl;
+
+	tmp<volScalarField> tsmoothed(
+		curvatureSmoother_->smoothen(K)
+	);
+
+    if (tsmoothed.isTmp())
+	{
+    	// Use GeometricField::operator=(tmp) to transfer the data without copying.
+		K = tsmoothed;
+	}
+	else
+	{
+		// The above gives a SegFault if tmp is of type CONST_REF, because GeometricField::operator=(tmp) attempts to steal the data from a const.
+		// This bug was fixed in OF50.
+		// Instead, take a detour by calling GeometricField::operator=(const&).
+		const volScalarField& smoothed(tsmoothed());
+		if (&smoothed != &K){ // Only copy if the new data is not what we already have. (Which happens with the "noneSmoother".)
+		    K = smoothed; // Disadvantage: results in data copy, but we have to.
+		}
+	}
+
+    // SegFault with the short version in case of "noneSmoother". See "updateAlphaSmooth()" for explanation.
+    //	K = curvatureSmoother_->smoothen(K);
+
+    Info << "(vofsmooth.C) Now calling tsmoothed.clear():" << endl;
+    tsmoothed.clear();
+}
+
 // * * * * * * * * * * * * * * * * Constructors  * * * * * * * * * * * * * * //
 
 Foam::curvatureModels::vofsmooth::vofsmooth
@@ -57,36 +92,102 @@ Foam::curvatureModels::vofsmooth::vofsmooth
 )
 :
 	curvatureModel(name,interfaceProperties,modelType),
-	alphaSmoother_(
-//			Foam::vofsmooth::smootherKernel<scalar>::New("alphaSmoother", coeffsDict_.lookup("smoothAlpha"))
-			Foam::vofsmooth::smootherKernel<scalar>::New("alphaSmoother", coeffsDict_.subDict("smoothAlpha"))
+
+	alphaSmooth_(
+		IOobject
+		(
+				"smooth("+retrieve_alpha().name()+")", // new name
+				retrieve_alpha().instance(), // same instance
+				retrieve_alpha().mesh(), // same registry
+				IOobject::NO_READ,
+				IOobject::NO_WRITE,
+				true // register
+		),
+		retrieve_alpha() // copy values as IC
 	),
+
+	alphaSmoother_(
+//		Foam::vofsmooth::smootherKernel<scalar>::New("alphaSmoother", coeffsDict_.lookup("smoothAlpha"))
+		Foam::vofsmooth::smootherKernel<scalar>::New("alphaSmoother", coeffsDict_.subDict("smoothAlpha"))
+	),
+
 	curvatureSmoother_(
-//			Foam::vofsmooth::smootherKernel<scalar>::New("curvatureSmoother", coeffsDict_.lookup("smoothCurvature"))
-			Foam::vofsmooth::smootherKernel<scalar>::New("curvatureSmoother", coeffsDict_.subDict("smoothCurvature"))
+//		Foam::vofsmooth::smootherKernel<scalar>::New("curvatureSmoother", coeffsDict_.lookup("smoothCurvature"))
+		Foam::vofsmooth::smootherKernel<scalar>::New("curvatureSmoother", coeffsDict_.subDict("smoothCurvature"))
 	)
 {
     read(); // Note: parent's read is called twice, but that doesn't really matter.
+    updateAlphaSmooth(); // Init alphaSmooth_ as the smoothed alpha field, such that other classes can immediately use it if they so desire.
 }
 
 
 // * * * * * * * * * * * * * * Member Functions  * * * * * * * * * * * * * * //
 
-void Foam::curvatureModels::vofsmooth::calculateK(volScalarField& K, surfaceScalarField& nHatf) const
+void Foam::curvatureModels::vofsmooth::updateAlphaSmooth()
 {
+	Info << "(vofsmooth.C) updateAlphaSmooth()" << endl;
+
+	tmp<volScalarField> tsmoothed(
+		alphaSmoother_->smoothen(retrieve_alpha())
+	);
+
+    if (tsmoothed.isTmp())
+	{
+    	// Use GeometricField::operator=(tmp) to transfer the data without copying.
+		alphaSmooth_ = tsmoothed;
+	}
+	else
+	{
+		// The above gives a SegFault if tmp is of type CONST_REF, because GeometricField::operator=(tmp) attempts to steal the data from a const.
+		// This bug was fixed in OF50.
+		// Instead, take a detour by calling GeometricField::operator=(const&).
+		const volScalarField& smoothed(tsmoothed());
+	    alphaSmooth_ = smoothed; // Disadvantage: results in data copy, but we have to.
+	}
+
+    // SegFault if this (shorter) method is used. This is fixed in OF50.
+//    alphaSmooth_ = alphaSmoother_->smoothen(retrieve_alpha()); // Segfault at some future point in the code if alphaSmoother_ returns a tmp of type CONST_REF.
+//    alphaSmoother_->smoothen(retrieve_alpha()); // No Segfault without GeometricField::operator=, hence that operator causes it.
+}
+
+void Foam::curvatureModels::vofsmooth::calculateK(volScalarField& K, surfaceScalarField& nHatf)
+{
+	Info << "(vofsmooth.C) calculateK(" << K.name() << "," << nHatf.name() << ")" << endl;
+
 	const volScalarField& alpha1 = retrieve_alpha();
 	const dimensionedScalar& deltaN = retrieve_deltaN();
 
 	const fvMesh& mesh = alpha1.mesh();
 	const surfaceVectorField& Sf = mesh.Sf();
 
+    Info << alpha1.db().names<volScalarField>() << endl;
+
 	// Define a smoothed version of the alpha field. Initialise it as a copy.
-    volScalarField alpha1_smooth = alpha1;
-    volScalarField doNotCompileThisPlease = alphaSmoother_->smoothen(alpha1_smooth);
+//    volScalarField alpha1_smooth = alpha1;
+//    volScalarField alpha1_smooth(
+//		IOobject
+//		(
+//				"smooth("+alpha1.name()+")", // new name
+//				alpha1.instance(), // same instance
+//				alpha1.mesh(), // same registry
+//                IOobject::NO_READ,
+//                IOobject::NO_WRITE,
+//				true // register
+//		),
+//		alpha1 // copy values as IC
+//    );
+//    alphaSmooth_ = alpha1; // copy values as IC
+
+//    Info << alpha1.db().names() << endl;
+
+//    alphaSmooth_ = alphaSmoother_->smoothen(alpha1);
+    updateAlphaSmooth();
 //    smoothen(alpha1_smooth);
 
 	// Cell gradient of alpha, based on the _smoothed_ alpha field.
-	const volVectorField gradAlpha(fvc::grad(alpha1_smooth, "nHat"));
+	const volVectorField gradAlpha(fvc::grad(alphaSmooth_, "nHat"));
+
+//	Info << "gradAlpha was computed." << endl;
 
 	// Interpolated face-gradient of alpha
 	surfaceVectorField gradAlphaf(fvc::interpolate(gradAlpha));
@@ -110,7 +211,10 @@ void Foam::curvatureModels::vofsmooth::calculateK(volScalarField& K, surfaceScal
 	// Simple expression for curvature
 	K = -fvc::div(nHatf);
 
-	curvatureSmoother_->smoothen(K);
+//	Info << "Now smoothing curvature." << endl;
+	smoothCurvature(K);
+//	K = curvatureSmoother_->smoothen(K);
+//	Info << "Now smoothing curvature. finished" << endl;
 
 	// Complex expression for curvature.
 	// Correction is formally zero but numerically non-zero.

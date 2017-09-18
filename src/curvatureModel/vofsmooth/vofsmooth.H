@@ -55,8 +55,14 @@ class vofsmooth
 {
     // Private data
 
+		volScalarField alphaSmooth_; // Add smoothed alpha field as a member data to keep it in the objectRegistry.
+
 		autoPtr<Foam::vofsmooth::smootherKernel<scalar>> alphaSmoother_;
 		autoPtr<Foam::vofsmooth::smootherKernel<scalar>> curvatureSmoother_;
+
+	// Private Member Functions
+
+		void smoothCurvature(volScalarField& K);
 
 public:
 
@@ -81,7 +87,9 @@ public:
 
     // Member Functions
 
-		void calculateK(volScalarField& K, surfaceScalarField& nHatf) const;
+		void updateAlphaSmooth();
+
+		void calculateK(volScalarField& K, surfaceScalarField& nHatf);
 
         //- Read transportProperties dictionary
         bool read();

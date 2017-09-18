@@ -22,73 +22,95 @@ License
     along with OpenFOAM.  If not, see <http://www.gnu.org/licenses/>.
 
 Class
-    Foam::curvatureModel::normal
+    Foam::vofsmooth::smootherKernels::none
 
 Description
     TODO
 
 SourceFiles
-    normal.C
+    none.C
 
 \*---------------------------------------------------------------------------*/
 
-#ifndef curvatureModel_normal_H
-#define curvatureModel_normal_H
+#ifndef vofsmooth_weightedSmootherKernel_H
+#define vofsmooth_weightedSmootherKernel_H
 
-#include "curvatureModel.H"
+#include "smootherKernel.H"
+#include "weightFactor.H"
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
 namespace Foam
 {
-namespace curvatureModels
+namespace vofsmooth
 {
 
 /*---------------------------------------------------------------------------*\
                            Class normal Declaration
 \*---------------------------------------------------------------------------*/
 
-class normal
+template<class Type>
+class weightedSmootherKernel
 :
-    public curvatureModel
+    public smootherKernel<Type>
 {
     // Private data
 
+	// Private Member Functions
+
+protected:
+
+	// Protected data
+
+		autoPtr<weightFactor> weight_;
 
 public:
 
     //- Runtime type information
-        TypeName("normal");
-
+//	    virtual const word& type() const = 0;
+	    //TypeName("weightedSmootherKernel"); // KVA note: cannot do this with a templated base class.
 
     // Constructors
 
-        //- Construct from components
-        normal
+        //- Construct from dictionary
+        weightedSmootherKernel
         (
-            const word& name,
-            const interfaceProperties& interfaceProperties,
-			const word& modelType
+			const word& name,
+			const dictionary & dict
+        );
+
+        //- Construct from components
+        weightedSmootherKernel
+        (
+			const word& name,
+			weightFactor* weight
         );
 
 
     //- Destructor
-		~normal(){}
+		virtual ~weightedSmootherKernel(){}
 
 
     // Member Functions
 
-		void calculateK(volScalarField& K, surfaceScalarField& nHatf);
-
-        //- Read transportProperties dictionary
-        bool read();
+		virtual tmp<GeometricField<Type, fvPatchField, volMesh>> smoothen(const GeometricField<Type, fvPatchField, volMesh>& fld) const = 0;
+		virtual tmp<GeometricField<Type, fvPatchField, volMesh>> smoothen(
+			const GeometricField<Type, fvPatchField, volMesh>& fld,
+			const tmp<volScalarField>& tweight
+		) const = 0;
 };
 
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
-} // End namespace curvatureModel
+} // End namespace vofsmooth
 } // End namespace Foam
+
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+#ifdef NoRepository
+    #include "weightedSmootherKernel.C"
+#endif
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 

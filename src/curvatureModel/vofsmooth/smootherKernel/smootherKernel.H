@@ -72,7 +72,7 @@ protected:
 public:
 
     //- Runtime type information
-    virtual const word& type() const = 0;
+        virtual const word& type() const = 0;
 //        TypeName("smootherKernel"); // KVA note: cannot do this with a templated base class.
 
     // Declare run-time constructor selection table
@@ -113,6 +113,7 @@ public:
 //		template<class Type> // KVA note: virtual method cannot be templated in C++. Instead, template the entire class.
 //		virtual void smoothen(GeometricField<Type, fvPatchField, volMesh>& fld) const = 0;
 		virtual tmp<GeometricField<Type, fvPatchField, volMesh>> smoothen(const GeometricField<Type, fvPatchField, volMesh>& fld) const = 0;
+		tmp<GeometricField<Type, fvPatchField, volMesh>> smoothen(const tmp<GeometricField<Type, fvPatchField, volMesh>>& tfld) const;
 
 //		virtual GeometricField<Type, fvPatchField, volMesh> smoothen(GeometricField<Type, fvPatchField, volMesh>& fld) const{
 //			return fld;

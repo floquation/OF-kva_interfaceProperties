@@ -58,7 +58,8 @@ Foam::vofsmooth::smootherKernel<Type>::~smootherKernel()
 // * * * * * * * * * * * * * * * * Selectors * * * * * * * * * * * * * * * * //
 
 template<class Type>
-Foam::autoPtr< Foam::vofsmooth::smootherKernel<Type> > Foam::vofsmooth::smootherKernel<Type>::New
+Foam::autoPtr< Foam::vofsmooth::smootherKernel<Type> >
+Foam::vofsmooth::smootherKernel<Type>::New
 (
 	const word& name,
 	const dictionary& dict
@@ -111,7 +112,17 @@ Foam::autoPtr< Foam::vofsmooth::smootherKernel<Type> > Foam::vofsmooth::smoother
 
 // * * * * * * * * * * * * * * Member Functions  * * * * * * * * * * * * * * //
 
-
+template<class Type>
+Foam::tmp<Foam::GeometricField<Type, Foam::fvPatchField, Foam::volMesh>>
+Foam::vofsmooth::smootherKernel<Type>::smoothen(const tmp<GeometricField<Type, fvPatchField, volMesh>>& tfld) const{
+	Info << "(smootherKernel) Using smootherKernel::smoothen(tmp)." << endl;
+    tmp<GeometricField<Type, fvPatchField, volMesh>> tReturn
+    (
+        smoothen(tfld())
+    );
+    tfld.clear();
+    return tReturn;
+}
 
 //bool Foam::vofsmooth::smootherKernel::read()
 //{

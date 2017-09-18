@@ -21,77 +21,15 @@ License
     You should have received a copy of the GNU General Public License
     along with OpenFOAM.  If not, see <http://www.gnu.org/licenses/>.
 
-Class
-    Foam::curvatureModel::normal
-
 Description
     TODO
 
-SourceFiles
-    normal.C
-
 \*---------------------------------------------------------------------------*/
 
-#ifndef curvatureModel_normal_H
-#define curvatureModel_normal_H
-
-#include "curvatureModel.H"
+#include "normalDirSmoother.H"
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
-namespace Foam
-{
-namespace curvatureModels
-{
-
-/*---------------------------------------------------------------------------*\
-                           Class normal Declaration
-\*---------------------------------------------------------------------------*/
-
-class normal
-:
-    public curvatureModel
-{
-    // Private data
-
-
-public:
-
-    //- Runtime type information
-        TypeName("normal");
-
-
-    // Constructors
-
-        //- Construct from components
-        normal
-        (
-            const word& name,
-            const interfaceProperties& interfaceProperties,
-			const word& modelType
-        );
-
-
-    //- Destructor
-		~normal(){}
-
-
-    // Member Functions
-
-		void calculateK(volScalarField& K, surfaceScalarField& nHatf);
-
-        //- Read transportProperties dictionary
-        bool read();
-};
-
-
-// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
-
-} // End namespace curvatureModel
-} // End namespace Foam
-
-// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
-
-#endif
+makeSmootherKernel(normalDirSmoother)
 
 // ************************************************************************* //
