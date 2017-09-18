@@ -173,7 +173,50 @@ Simply add the following to your constant/transportProperties dictionary:
 curvatureModel      vofsmooth; // normal;
 vofsmoothCoeffs
 {
-    numSmoothingIterations 2; // default: 2
+    /*
+    smoothAlpha{
+        type    interpolate;
+        numIts  2;
+        weightFactor{
+            type Raeini; // sqrt(alpha*(1-alpha)+1e-15)
+            alpha alpha.water;
+        }
+    }
+    smoothAlpha{
+        type    none;
+    }
+    */
+    smoothAlpha{
+        type    Csk; // See [4], eq. 12
+        numIts  2;
+        smoother{
+            type interpolate; // See [4], sec. 3.2
+            numIts  1;
+            weightFactor{
+                type unweighted;
+            }
+        }
+    }
+    
+    /*
+    smoothCurvature{
+        type    interpolate;
+        numIts  2;
+        weightFactor{
+            type Raeini;
+            alpha alpha.water; //smooth(alpha.water);
+        }
+    }
+    */
+    smoothCurvature{
+        type    normalDir; // See [4], eq. 15
+        numIts  2;
+        alpha   alpha.water;
+    }
+}
+
+surfaceTensionForceModel{
+    densityWeighted         no; // I have bad experience with "yes", but Brackbill (1992) does use it.
 }
 ```
 And you're ready to go!!
@@ -209,6 +252,8 @@ Without it, your simulation could very well become non-physical, despite it conv
 [2] Hoang DA, van Steijn V, Portela LM, Kreutzer MT, Kleijn CR. Benchmark numerical simulations of segmented two-phase flows in microchannels using the Volume of Fluid method. J Computers & Fluids 2013;86:28-36
 
 [3] Deshpande, S. S., Anumolu, L., & Trujillo, M. F. (2012). Evaluating the performance of the two-phase flow solver interFoam. Computational science & discovery, 5(1), 014016.
+
+[4] Raeini, Ali Q., Martin J. Blunt, and Branko Bijeljic. "Modelling two-phase flow in porous media at the pore scale using the volume-of-fluid method." Journal of Computational Physics 231, no. 17 (2012): 5653-5668.
 
 ## About the author
 
