@@ -153,7 +153,6 @@ Foam::vofsmooth::cfcInterpolationSmoother<Type>::smoothen(
 	}
 
     return fldSmooth;
-    // tweight is automatically cleared (out-of-scope)
 }
 
 // ************************************************************************* //

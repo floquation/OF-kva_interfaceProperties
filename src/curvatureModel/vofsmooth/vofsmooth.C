@@ -107,12 +107,16 @@ Foam::curvatureModels::vofsmooth::vofsmooth
 	),
 
 	alphaSmoother_(
-//		Foam::vofsmooth::smootherKernel<scalar>::New("alphaSmoother", coeffsDict_.lookup("smoothAlpha"))
+//		Foam::vofsmooth::smootherKernel<scalar>::New("alphaSmoother", coeffsDict_.lookup("smoothAlpha")) // Istream
 		Foam::vofsmooth::smootherKernel<scalar>::New("alphaSmoother", coeffsDict_.subDict("smoothAlpha"))
 	),
 
+	gradientAlphaSmoother_(
+		Foam::vofsmooth::smootherKernel<vector>::New("gradAlphaSmoother", coeffsDict_.subDict("calculateNormal"))
+	),
+
 	curvatureSmoother_(
-//		Foam::vofsmooth::smootherKernel<scalar>::New("curvatureSmoother", coeffsDict_.lookup("smoothCurvature"))
+//		Foam::vofsmooth::smootherKernel<scalar>::New("curvatureSmoother", coeffsDict_.lookup("smoothCurvature")) // Istream
 		Foam::vofsmooth::smootherKernel<scalar>::New("curvatureSmoother", coeffsDict_.subDict("smoothCurvature"))
 	)
 {
@@ -148,6 +152,8 @@ void Foam::curvatureModels::vofsmooth::updateAlphaSmooth()
     // SegFault if this (shorter) method is used. This is fixed in OF50.
 //    alphaSmooth_ = alphaSmoother_->smoothen(retrieve_alpha()); // Segfault at some future point in the code if alphaSmoother_ returns a tmp of type CONST_REF.
 //    alphaSmoother_->smoothen(retrieve_alpha()); // No Segfault without GeometricField::operator=, hence that operator causes it.
+
+    Info << "(vofsmooth.C) Clear tsmoothed now?" << endl;
 }
 
 void Foam::curvatureModels::vofsmooth::calculateK(volScalarField& K, surfaceScalarField& nHatf)
@@ -162,35 +168,18 @@ void Foam::curvatureModels::vofsmooth::calculateK(volScalarField& K, surfaceScal
 
     Info << alpha1.db().names<volScalarField>() << endl;
 
-	// Define a smoothed version of the alpha field. Initialise it as a copy.
-//    volScalarField alpha1_smooth = alpha1;
-//    volScalarField alpha1_smooth(
-//		IOobject
-//		(
-//				"smooth("+alpha1.name()+")", // new name
-//				alpha1.instance(), // same instance
-//				alpha1.mesh(), // same registry
-//                IOobject::NO_READ,
-//                IOobject::NO_WRITE,
-//				true // register
-//		),
-//		alpha1 // copy values as IC
-//    );
-//    alphaSmooth_ = alpha1; // copy values as IC
-
-//    Info << alpha1.db().names() << endl;
-
-//    alphaSmooth_ = alphaSmoother_->smoothen(alpha1);
+	// Smooth alpha
     updateAlphaSmooth();
-//    smoothen(alpha1_smooth);
+	Info << "(vofsmooth.C) updateAlphaSmooth() done." << endl;
 
 	// Cell gradient of alpha, based on the _smoothed_ alpha field.
 	const volVectorField gradAlpha(fvc::grad(alphaSmooth_, "nHat"));
 
-//	Info << "gradAlpha was computed." << endl;
+	// Smooth gradAlpha before calculating curvature
+	tmp<volVectorField> gradAlphaSmooth(gradientAlphaSmoother_->smoothen(gradAlpha));
 
 	// Interpolated face-gradient of alpha
-	surfaceVectorField gradAlphaf(fvc::interpolate(gradAlpha));
+	surfaceVectorField gradAlphaf(fvc::interpolate(gradAlphaSmooth));
 
 	//gradAlphaf -=
 	//    (mesh.Sf()/mesh.magSf())
