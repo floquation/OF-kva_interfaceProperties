@@ -111,7 +111,7 @@ Foam::vofsmooth::normalDirSmoother<Type>::smoothen(
 
     	// Calculate fldNext and immediately overwrite fldPrev.
     	// The arithmetics creates a new data field.
-    	fldPrev = (1-weight)*fldSmooth + weight*fld;
+    	fldPrev = (1-2*weight)*fldSmooth + 2*weight*fld;
     }
 
     // TODO: Test
