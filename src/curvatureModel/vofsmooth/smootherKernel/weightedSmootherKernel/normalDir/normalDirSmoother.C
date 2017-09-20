@@ -93,7 +93,7 @@ Foam::vofsmooth::normalDirSmoother<Type>::smoothen(
 	tmp<GeometricField<Type, fvPatchField, volMesh>> fldPrev(fld);
 
 	// Obtain weightFactor
-	const volScalarField& weight = tweight(); // Copy pointer to const&.
+	const volScalarField& weight = tweight(); // Copy pointer to const&. tmp is not cleared.
 //	const volScalarField& weight = weight_->weight(fld.mesh())(); // SegFault! This creates a tmp. Gets a constant reference to its data. Then the tmp goes out of scope immediately, and we are left with a reference to freed memory!
 
 	// Smoothen field
@@ -115,8 +115,9 @@ Foam::vofsmooth::normalDirSmoother<Type>::smoothen(
     }
 
     // TODO: Test
-    Info << "(normalDirSmoother) Now calling tweight.clear():" << endl;
+    Info << "(normalDirSmoother) Now calling tweight.clear(). Before: tweight.valid() = " << tweight.valid() << endl;
     tweight.clear();
+    Info << "(normalDirSmoother) Was it called?? After: tweight.valid() = " << tweight.valid() << endl;
 
     return fldPrev;
 }

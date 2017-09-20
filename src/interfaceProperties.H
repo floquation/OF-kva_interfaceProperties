@@ -54,6 +54,7 @@ SourceFiles
 #include "volFields.H"
 #include "surfaceFields.H"
 #include "curvatureModel.H" // KVA
+#include "weightFactor.H" // KVA
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
@@ -91,6 +92,8 @@ class interfaceProperties
         const volVectorField& U_;
         surfaceScalarField nHatf_;
         volScalarField K_;
+
+		autoPtr<vofsmooth::weightFactor> interpolateKWeight_; // KVA: Interpolate curvature with this weightFactor.
 
         friend class curvatureModel; // KVA: Allow curvatureModel to access private members (alpha1_, deltaN_, ...)
         autoPtr<curvatureModel> curvatureModel_; // KVA: class that computes the curvature (K_)

@@ -24,7 +24,7 @@ License
 \*---------------------------------------------------------------------------*/
 
 #include "cfcInterpolationSmoother.H"
-#include "fvcAverage.H"
+#include "fvcWeightedAverage.H"
 
 namespace Foam
 {
@@ -135,22 +135,30 @@ Foam::vofsmooth::cfcInterpolationSmoother<Type>::smoothen(
 	tmp<GeometricField<Type, fvPatchField, volMesh>> fldSmooth(fld);
 
 	// Smoothen field
-	if(tweight.empty()){ // unweighted
-	    for(int iter = 0; iter < numSmoothingIterations_; iter++)
-	    {
-        	fldSmooth = fvc::average(fldSmooth);
-	    }
-	}else{ // weighted
-//		const volScalarField weight = tweight(); // Will copy data
-//		volScalarField weight = tweight(); // Will copy data.
-		const volScalarField& weight = tweight(); // Will refer pointer.
-//		Info << "&weight == &tweight()? " << ( &weight == &tweight() ) << endl;
-	    for(int iter = 0; iter < numSmoothingIterations_; iter++)
-	    {
-        	fldSmooth = fvc::average(weight*fldSmooth) / fvc::average(weight);
-        	Info << "(cfcInterpolationSmoother) fldSmooth->name() = " << fldSmooth->name() << endl;
-	    }
-	}
+    for(int iter = 0; iter < numSmoothingIterations_; iter++)
+    {
+//    	Info << "Before weightedAverage, is tweight valid? " << tweight.valid() << endl;
+    	fldSmooth = fvc::weightedAverage(fldSmooth, tweight); // Note: fvc::weightedAverage does not clear tweight.
+//    	Info << "After weightedAverage, is tweight valid? " << tweight.valid() << endl;
+    	Info << "(cfcInterpolationSmoother) fldSmooth->name() = " << fldSmooth->name() << endl;
+    }
+
+//	if(tweight.empty()){ // unweighted
+//	    for(int iter = 0; iter < numSmoothingIterations_; iter++)
+//	    {
+//        	fldSmooth = fvc::average(fldSmooth);
+//	    }
+//	}else{ // weighted
+////		const volScalarField weight = tweight(); // Will copy data
+////		volScalarField weight = tweight(); // Will copy data.
+//		const volScalarField& weight = tweight(); // Will copy pointer.
+////		Info << "&weight == &tweight()? " << ( &weight == &tweight() ) << endl;
+//	    for(int iter = 0; iter < numSmoothingIterations_; iter++)
+//	    {
+//        	fldSmooth = fvc::average(weight*fldSmooth) / fvc::average(weight);
+//        	Info << "(cfcInterpolationSmoother) fldSmooth->name() = " << fldSmooth->name() << endl;
+//	    }
+//	}
 
     return fldSmooth;
 }

@@ -69,9 +69,16 @@ Foam::vofsmooth::weightFactors::unweighted::unweighted
 //		)
 //	)
 {
-	// Don't have to read anything from "is" for unweighted.
+	// Don't have to read anything from dict for unweighted.
 }
 
+Foam::vofsmooth::weightFactors::unweighted::unweighted
+(
+	const word& name
+)
+:
+	weightFactor(name)
+{}
 
 // * * * * * * * * * * * * * * * * Destructor  * * * * * * * * * * * * * * * //
 

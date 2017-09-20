@@ -30,6 +30,8 @@ License
 //#include "fvcDiv.H" // KVA: no longer needed
 //#include "fvcGrad.H" // KVA: no longer needed
 #include "fvcSnGrad.H"
+#include "unweighted.H" // KVA
+#include "fvcWeightedSurfaceInterpolate.H" // KVA
 
 // * * * * * * * * * * * * * * * Static Member Data  * * * * * * * * * * * * //
 
@@ -193,6 +195,7 @@ Foam::interfaceProperties::interfaceProperties
 Foam::tmp<Foam::surfaceScalarField>
 Foam::interfaceProperties::surfaceTensionForce() const
 {
+	tmp<volScalarField> tweight = this->interpolateKWeight_->weight(alpha1_.mesh()); // KVA: Made this method use weightedInterpolate instead of regular interpolate.
 	if(densityWeighted_){ // KVA: Added a switch to select between the density-weighted surfaceTensionForce calculation and OF's default one.
 		const volScalarField limitedAlpha1
 		(
@@ -200,12 +203,11 @@ Foam::interfaceProperties::surfaceTensionForce() const
 		);
 
 		const volScalarField rho(limitedAlpha1*rho1_ + (scalar(1) - limitedAlpha1)*rho2_);
-		return fvc::interpolate(sigmaK()*rho)*fvc::snGrad(alpha1_) * 2/(rho1_+rho2_);
+		return fvc::weightedInterpolate(sigmaK()*rho,tweight)*fvc::snGrad(alpha1_) * 2/(rho1_+rho2_);
 	}else{
-        return fvc::interpolate(sigmaK())*fvc::snGrad(alpha1_);
+        return fvc::weightedInterpolate(sigmaK(),tweight)*fvc::snGrad(alpha1_);
 	}
 }
-
 
 Foam::tmp<Foam::volScalarField>
 Foam::interfaceProperties::nearInterface() const
@@ -231,22 +233,29 @@ bool Foam::interfaceProperties::read()
 
 bool Foam::interfaceProperties::readSurfaceTensionModel() // KVA
 {
-    if(transportPropertiesDict_.found("surfaceTensionForceModel")){
+    if(transportPropertiesDict_.found("surfaceTensionForceModel")){ // Read from dict
     	const dictionary& stfDict = transportPropertiesDict_.subDict("surfaceTensionForceModel");
-
         if(!stfDict.found("densityWeighted")){
     		WarningInFunction
     			<< "Keyword \"densityWeighted\" not found in surfaceTensionForceModel subdictionary." << nl
     			<< "    " << "Selecting default value " << false << " instead." << endl;
     	}
+
     	densityWeighted_ = stfDict.lookupOrDefault("densityWeighted",false);
-    }else{
+    	interpolateKWeight_ = vofsmooth::weightFactor::New("weight(interpolateK)", stfDict.subDict("interpolateCurvature").subDict("weightFactor"));
+    }else{ // Default everything
 		WarningInFunction
 			<< "Subdictionary surfaceTensionForceModel not found. Selecting the following default values instead:" << nl
 			<< "    " << "densityWeighted = " << false << endl;
+
     	densityWeighted_ = false;
+    	interpolateKWeight_.reset(new vofsmooth::weightFactors::unweighted("weight(interpolateK)"));
     }
-    Info<< "Selecting surfaceTensionModel CSF(densityWeighted=" << densityWeighted_ << ")" << endl;
+
+    Info << "Selecting surfaceTensionModel CSF("
+    		<< "densityWeighted=" << densityWeighted_
+    		<< ", weight(interpolateK)=" << interpolateKWeight_->type()
+			<< ")" << endl;
 
     return true;
 }

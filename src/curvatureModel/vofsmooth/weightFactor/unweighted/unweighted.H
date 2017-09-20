@@ -75,6 +75,10 @@ public:
 			const dictionary& dict
 		);
 
+		unweighted(
+			const word& name
+		);
+
     //- Destructor
 
 		virtual ~unweighted();
