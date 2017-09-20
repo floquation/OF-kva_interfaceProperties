@@ -107,17 +107,17 @@ Foam::curvatureModels::vofsmooth::vofsmooth
 	),
 
 	alphaSmoother_(
-//		Foam::vofsmooth::smootherKernel<scalar>::New("alphaSmoother", coeffsDict_.lookup("smoothAlpha")) // Istream
-		Foam::vofsmooth::smootherKernel<scalar>::New("alphaSmoother", coeffsDict_.subDict("smoothAlpha"))
+//		Foam::smoothers::smootherKernel<scalar>::New("alphaSmoother", coeffsDict_.lookup("smoothAlpha")) // Istream
+		Foam::smoothers::smootherKernel<scalar>::New("alphaSmoother", coeffsDict_.subDict("smoothAlpha"))
 	),
 
 	gradientAlphaSmoother_(
-		Foam::vofsmooth::smootherKernel<vector>::New("gradAlphaSmoother", coeffsDict_.subDict("calculateNormal"))
+		Foam::smoothers::smootherKernel<vector>::New("gradAlphaSmoother", coeffsDict_.subDict("calculateNormal"))
 	),
 
 	curvatureSmoother_(
-//		Foam::vofsmooth::smootherKernel<scalar>::New("curvatureSmoother", coeffsDict_.lookup("smoothCurvature")) // Istream
-		Foam::vofsmooth::smootherKernel<scalar>::New("curvatureSmoother", coeffsDict_.subDict("smoothCurvature"))
+//		Foam::smoothers::smootherKernel<scalar>::New("curvatureSmoother", coeffsDict_.lookup("smoothCurvature")) // Istream
+		Foam::smoothers::smootherKernel<scalar>::New("curvatureSmoother", coeffsDict_.subDict("smoothCurvature"))
 	)
 {
     read(); // Note: parent's read is called twice, but that doesn't really matter.

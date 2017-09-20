@@ -31,7 +31,7 @@ namespace Foam
 // * * * * * * * * * * * * * * * * Constructors  * * * * * * * * * * * * * * //
 
 template<class Type>
-Foam::vofsmooth::cskSmoother<Type>::cskSmoother
+Foam::smoothers::cskSmoother<Type>::cskSmoother
 (
 	const word& name,
 	const dictionary& dict
@@ -42,7 +42,7 @@ Foam::vofsmooth::cskSmoother<Type>::cskSmoother
 	numSmoothingIterations_(dict.lookupOrDefault<label>("numIts",0)),
 	Csk_(dict.lookupOrDefault<float>("Csk",0.5)),
 	smoother_(
-		Foam::vofsmooth::smootherKernel<Type>::New(name,dict.subDict("smoother"))
+		Foam::smoothers::smootherKernel<Type>::New(name,dict.subDict("smoother"))
 	)
 {
 //	Info << "Dict contained numSmoothingIterations_ = " << numSmoothingIterations_ << endl; // works!
@@ -61,7 +61,7 @@ Foam::vofsmooth::cskSmoother<Type>::cskSmoother
 
 template<class Type>
 tmp<GeometricField<Type, fvPatchField, volMesh>>
-Foam::vofsmooth::cskSmoother<Type>::smoothen(const GeometricField<Type, fvPatchField, volMesh>& fld) const{
+Foam::smoothers::cskSmoother<Type>::smoothen(const GeometricField<Type, fvPatchField, volMesh>& fld) const{
 	Info << "(cskSmoother) Smoothing " << fld.name() << "." << endl;
 
 //	Info << "fld.count() = " << fld.count() << endl;

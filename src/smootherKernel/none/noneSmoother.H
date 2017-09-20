@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2011-2016 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2011-2015 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -22,102 +22,80 @@ License
     along with OpenFOAM.  If not, see <http://www.gnu.org/licenses/>.
 
 Class
-    Foam::weightFactor
+    Foam::vofsmooth::smootherKernels::none
 
 Description
     TODO
 
 SourceFiles
-    weightFactor.C
+    none.C
 
 \*---------------------------------------------------------------------------*/
 
-#ifndef vofsmooth_weightFactor_H
-#define vofsmooth_weightFactor_H
+#ifndef smoothers_noneSmoother_H
+#define smoothers_noneSmoother_H
 
-#include "volFields.H"
-#include "typeInfo.H"
-#include "runTimeSelectionTables.H"
-//#include "GeometricFields.H"
-//#include "IOstreams.H"
-#include "tmp.H"
+#include "smootherKernel.H"
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
 namespace Foam
 {
-namespace vofsmooth
+namespace smoothers
 {
-
 
 /*---------------------------------------------------------------------------*\
-                           Class weightFactor Declaration
+                           Class normal Declaration
 \*---------------------------------------------------------------------------*/
 
-class weightFactor
+template<class Type>
+class noneSmoother
+:
+    public smootherKernel<Type>
 {
-    // Private Member Functions
+    // Private data
 
-protected:
-
-    // Protected data
-
-        word name_; // KVA: Added a name, like OpenFoam's "viscosityModel". I don't understand why.
+	// Private Member Functions
 
 public:
 
     //- Runtime type information
-        TypeName("weightFactor");
+        TypeName("none");
 
-    // Declare run-time constructor selection table
+    // Constructors
 
-		declareRunTimeSelectionTable
-		(
-			autoPtr,
-			weightFactor,
-			Istream,
-			(
-				const word& name,
-				const dictionary& dict
-			),
-			(name, dict)
-		);
+        //- Construct from components
+        noneSmoother
+        (
+			const word& name,
+			const dictionary& dict
+//			Istream& is
+        );
 
-
-	// Constructors
-
-		weightFactor(
-			const word& name
-		);
-
-	// Selectors
-
-		//- Select based on given type name
-		static autoPtr<weightFactor> New(const word& name, const dictionary& dict);
 
     //- Destructor
+		virtual ~noneSmoother(){}
 
-		virtual ~weightFactor();
 
     // Member Functions
 
-		virtual tmp<volScalarField> weight(const fvMesh& mesh) const = 0;
-
-//		template<class Type> // KVA note: virtual method cannot be templated in C++. Instead, template the entire class.
-//		virtual void smoothen(GeometricField<Type, fvPatchField, volMesh>& fld) const = 0;
-//		virtual tmp<GeometricField<Type, fvPatchField, volMesh>> smoothen(const GeometricField<Type, fvPatchField, volMesh>& fld) const = 0;
-
-//		virtual GeometricField<Type, fvPatchField, volMesh> smoothen(GeometricField<Type, fvPatchField, volMesh>& fld) const{
-//			return fld;
-//		}
-
+		virtual tmp<GeometricField<Type, fvPatchField, volMesh>> smoothen(const GeometricField<Type, fvPatchField, volMesh>& fld) const {
+			// Do nothing to "fld", because "none" does not do any smoothing.
+			return tmp<GeometricField<Type, fvPatchField, volMesh>>(fld);
+		}
 };
 
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
-} // End namespace vofsmooth
+} // End namespace smoothers
 } // End namespace Foam
+
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+#ifdef NoRepository
+    #include "noneSmoother.C"
+#endif
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 

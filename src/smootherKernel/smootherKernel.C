@@ -36,7 +36,7 @@ License
 // * * * * * * * * * * * * * * * * Constructors  * * * * * * * * * * * * * * //
 
 template<class Type>
-Foam::vofsmooth::smootherKernel<Type>::smootherKernel
+Foam::smoothers::smootherKernel<Type>::smootherKernel
 (
 	const word& name
 )
@@ -51,15 +51,15 @@ Foam::vofsmooth::smootherKernel<Type>::smootherKernel
 // * * * * * * * * * * * * * * * * Destructor  * * * * * * * * * * * * * * * //
 
 template<class Type>
-Foam::vofsmooth::smootherKernel<Type>::~smootherKernel()
+Foam::smoothers::smootherKernel<Type>::~smootherKernel()
 {}
 
 
 // * * * * * * * * * * * * * * * * Selectors * * * * * * * * * * * * * * * * //
 
 template<class Type>
-Foam::autoPtr< Foam::vofsmooth::smootherKernel<Type> >
-Foam::vofsmooth::smootherKernel<Type>::New
+Foam::autoPtr< Foam::smoothers::smootherKernel<Type> >
+Foam::smoothers::smootherKernel<Type>::New
 (
 	const word& name,
 	const dictionary& dict
@@ -114,7 +114,7 @@ Foam::vofsmooth::smootherKernel<Type>::New
 
 template<class Type>
 Foam::tmp<Foam::GeometricField<Type, Foam::fvPatchField, Foam::volMesh>>
-Foam::vofsmooth::smootherKernel<Type>::smoothen(const tmp<GeometricField<Type, fvPatchField, volMesh>>& tfld) const{
+Foam::smoothers::smootherKernel<Type>::smoothen(const tmp<GeometricField<Type, fvPatchField, volMesh>>& tfld) const{
 	Info << "(smootherKernel) Using smootherKernel::smoothen(tmp)." << endl;
     tmp<GeometricField<Type, fvPatchField, volMesh>> tReturn
     (
@@ -124,7 +124,7 @@ Foam::vofsmooth::smootherKernel<Type>::smoothen(const tmp<GeometricField<Type, f
     return tReturn;
 }
 
-//bool Foam::vofsmooth::smootherKernel::read()
+//bool Foam::smoothers::smootherKernel::read()
 //{
 ////    alpha1_.mesh().solverDict(alpha1_.name()).lookup("cAlpha") >> cAlpha_;
 ////    transportPropertiesDict_.lookup("sigma") >> sigma_;

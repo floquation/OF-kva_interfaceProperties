@@ -242,14 +242,14 @@ bool Foam::interfaceProperties::readSurfaceTensionModel() // KVA
     	}
 
     	densityWeighted_ = stfDict.lookupOrDefault("densityWeighted",false);
-    	interpolateKWeight_ = vofsmooth::weightFactor::New("weight(interpolateK)", stfDict.subDict("interpolateCurvature").subDict("weightFactor"));
+    	interpolateKWeight_ = weightFactors::weightFactor::New("weight(interpolateK)", stfDict.subDict("interpolateCurvature").subDict("weightFactor"));
     }else{ // Default everything
 		WarningInFunction
 			<< "Subdictionary surfaceTensionForceModel not found. Selecting the following default values instead:" << nl
 			<< "    " << "densityWeighted = " << false << endl;
 
     	densityWeighted_ = false;
-    	interpolateKWeight_.reset(new vofsmooth::weightFactors::unweighted("weight(interpolateK)"));
+    	interpolateKWeight_.reset(new weightFactors::unweighted("weight(interpolateK)"));
     }
 
     Info << "Selecting surfaceTensionModel CSF("

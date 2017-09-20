@@ -32,8 +32,8 @@ SourceFiles
 
 \*---------------------------------------------------------------------------*/
 
-#ifndef vofsmooth_smootherKernel_H
-#define vofsmooth_smootherKernel_H
+#ifndef smoothers_smootherKernel_H
+#define smoothers_smootherKernel_H
 
 //#include "IOdictionary.H"
 #include "volFields.H"
@@ -48,7 +48,7 @@ SourceFiles
 
 namespace Foam
 {
-namespace vofsmooth
+namespace smoothers
 {
 
 
@@ -124,7 +124,7 @@ public:
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
-} // End namespace vofsmooth
+} // End namespace smoothers
 } // End namespace Foam
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
@@ -133,11 +133,11 @@ public:
 // Inspired by src/finiteVolume/finiteVolume/snGradSchemes
 
 #define makeSmootherKernelType(SS, Type)                                       \
-    defineNamedTemplateTypeNameAndDebug(Foam::vofsmooth::SS<Foam::Type>, 0);   \
+    defineNamedTemplateTypeNameAndDebug(Foam::smoothers::SS<Foam::Type>, 0);   \
                                                                                \
     namespace Foam                                                             \
     {                                                                          \
-        namespace vofsmooth                                                    \
+        namespace smoothers                                                    \
         {                                                                      \
             smootherKernel<Type>::addIstreamConstructorToTable<SS<Type>>       \
                 add##SS##Type##MeshConstructorToTable_;                        \

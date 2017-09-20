@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2011-2015 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2011-2016 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -22,95 +22,76 @@ License
     along with OpenFOAM.  If not, see <http://www.gnu.org/licenses/>.
 
 Class
-    Foam::vofsmooth::smootherKernels::none
+    Foam::weightFactor
 
 Description
     TODO
 
 SourceFiles
-    none.C
+    weightFactor.C
 
 \*---------------------------------------------------------------------------*/
 
-#ifndef vofsmooth_weightedSmootherKernel_H
-#define vofsmooth_weightedSmootherKernel_H
+#ifndef weightFactors_unweighted_H
+#define weightFactors_unweighted_H
 
-#include "smootherKernel.H"
 #include "weightFactor.H"
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
 namespace Foam
 {
-namespace vofsmooth
+namespace weightFactors
 {
 
+
 /*---------------------------------------------------------------------------*\
-                           Class normal Declaration
+                           Class weightFactor Declaration
 \*---------------------------------------------------------------------------*/
 
-template<class Type>
-class weightedSmootherKernel
+class unweighted
 :
-    public smootherKernel<Type>
+	public weightFactor
 {
     // Private data
 
-	// Private Member Functions
+//	const volScalarField& unitWeight;
 
 protected:
 
-	// Protected data
-
-		autoPtr<weightFactor> weight_;
+    // Protected data
 
 public:
 
     //- Runtime type information
-//	    virtual const word& type() const = 0;
-	    //TypeName("weightedSmootherKernel"); // KVA note: cannot do this with a templated base class.
+        TypeName("unweighted");
 
-    // Constructors
+	// Constructors
 
-        //- Construct from dictionary
-        weightedSmootherKernel
-        (
+		unweighted(
 			const word& name,
-			const dictionary & dict
-        );
+			const dictionary& dict
+		);
 
-        //- Construct from components
-        weightedSmootherKernel
-        (
-			const word& name,
-			weightFactor* weight
-        );
-
+		unweighted(
+			const word& name
+		);
 
     //- Destructor
-		virtual ~weightedSmootherKernel(){}
 
+		virtual ~unweighted();
 
     // Member Functions
 
-		virtual tmp<GeometricField<Type, fvPatchField, volMesh>> smoothen(const GeometricField<Type, fvPatchField, volMesh>& fld) const = 0;
-		virtual tmp<GeometricField<Type, fvPatchField, volMesh>> smoothen(
-			const GeometricField<Type, fvPatchField, volMesh>& fld,
-			const tmp<volScalarField>& tweight
-		) const = 0;
+		virtual tmp<volScalarField> weight(const fvMesh& mesh) const;
+
 };
 
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
-} // End namespace vofsmooth
+} // End namespace weightFactors
 } // End namespace Foam
-
-// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
-
-#ifdef NoRepository
-    #include "weightedSmootherKernel.C"
-#endif
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 

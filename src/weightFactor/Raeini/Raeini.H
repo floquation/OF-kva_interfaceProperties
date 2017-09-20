@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2011-2015 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2011-2016 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -22,85 +22,77 @@ License
     along with OpenFOAM.  If not, see <http://www.gnu.org/licenses/>.
 
 Class
-    Foam::vofsmooth::smootherKernels::none
+    Foam::weightFactor
 
 Description
     TODO
 
 SourceFiles
-    none.C
+    weightFactor.C
 
 \*---------------------------------------------------------------------------*/
 
-#ifndef vofsmooth_normalDirSmoother_H
-#define vofsmooth_normalDirSmoother_H
+#ifndef weightFactors_Raeini_H
+#define weightFactors_Raeini_H
 
-#include "weightedSmootherKernel.H"
 #include "weightFactor.H"
+#include "autoPtr.H"
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
 namespace Foam
 {
-namespace vofsmooth
+namespace weightFactors
 {
+
 
 /*---------------------------------------------------------------------------*\
-                           Class normal Declaration
+                           Class weightFactor Declaration
 \*---------------------------------------------------------------------------*/
 
-template<class Type>
-class normalDirSmoother
+class Raeini
 :
-    public weightedSmootherKernel<Type>
+	public weightFactor
 {
-    // Private data
 
-		int numSmoothingIterations_;
-		autoPtr<Foam::vofsmooth::weightedSmootherKernel<Type>> smoother_;
+	// Private data
 
-	// Private Member Functions
+		word alphaName_;
+//	autoPtr<volScalarField> alpha_;
+//	const volScalarField& alpha_;
 
 public:
 
     //- Runtime type information
-        TypeName("normalDir");
+        TypeName("Raeini");
 
-    // Constructors
+	// Constructors
 
-        //- Construct from components
-        normalDirSmoother
-        (
+		Raeini(
 			const word& name,
-			const dictionary & dict
-//			Istream& is
-        );
+			const dictionary& dict
+		);
 
+		Raeini(
+			const word& name,
+			const word& alphaName
+		);
 
     //- Destructor
-		virtual ~normalDirSmoother(){}
 
+		virtual ~Raeini();
 
     // Member Functions
 
-		virtual tmp<GeometricField<Type, fvPatchField, volMesh>> smoothen(const GeometricField<Type, fvPatchField, volMesh>& fld) const;
-		virtual tmp<GeometricField<Type, fvPatchField, volMesh>> smoothen(
-			const GeometricField<Type, fvPatchField, volMesh>& fld,
-			const tmp<volScalarField>& tweight
-		) const;
+		virtual tmp<volScalarField> weight(const fvMesh& mesh) const;
+
 };
 
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
-} // End namespace vofsmooth
+} // End namespace weightFactors
 } // End namespace Foam
-
-// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
-
-#ifdef NoRepository
-    #include "normalDirSmoother.C"
-#endif
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 

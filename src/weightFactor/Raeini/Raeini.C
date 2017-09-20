@@ -23,74 +23,98 @@ License
 
 \*---------------------------------------------------------------------------*/
 
-#include "unweighted.H"
+#include "Raeini.H"
 #include "addToRunTimeSelectionTable.H"
 
 // * * * * * * * * * * * * * * Static Data Members * * * * * * * * * * * * * //
 
 namespace Foam
 {
-namespace vofsmooth
-{
 namespace weightFactors
 {
-    defineTypeNameAndDebug(unweighted, 0);
+    defineTypeNameAndDebug(Raeini, 0);
     addToRunTimeSelectionTable
     (
     	weightFactor,
-        unweighted,
+        Raeini,
 		Istream
     );
-}
 }
 }
 
 // * * * * * * * * * * * * * * * * Constructors  * * * * * * * * * * * * * * //
 
-Foam::vofsmooth::weightFactors::unweighted::unweighted
+Foam::weightFactors::Raeini::Raeini
 (
 	const word& name,
 	const dictionary& dict
 )
 :
-	weightFactor(name)//,
-//	unitWeight(
-//		new volScalarField(
-//			IOobject
-//			(
-//				"one",
-//				mesh.time().timeName(), // instance; unneeded string?
-//				mesh, // db
-//				IOobject::NO_READ,
-//				IOobject::NO_WRITE
-//			),
-//			mesh,
-//			Foam::scalar(1)
-//		)
-//	)
+	weightFactor(name),
+	alphaName_(dict.lookupOrDefault<word>("alpha","alpha"))
 {
-	// Don't have to read anything from dict for unweighted.
+//	// First entry of "is" is the alphaName.
+//    token entry;
+//    is.read(entry);
+//    alphaName_ = entry.wordToken();
 }
 
-Foam::vofsmooth::weightFactors::unweighted::unweighted
+Foam::weightFactors::Raeini::Raeini
 (
-	const word& name
+	const word& name,
+	const word& alphaName
 )
 :
-	weightFactor(name)
-{}
+	weightFactor(name),
+	alphaName_(alphaName)
+{
+}
+
 
 // * * * * * * * * * * * * * * * * Destructor  * * * * * * * * * * * * * * * //
 
-Foam::vofsmooth::weightFactors::unweighted::~unweighted()
+Foam::weightFactors::Raeini::~Raeini()
 {}
 
 // * * * * * * * * * * * * * * Member Functions  * * * * * * * * * * * * * * //
 
 namespace Foam{
 
-tmp<volScalarField> vofsmooth::weightFactors::unweighted::weight(const fvMesh& mesh) const{
-	return tmp<volScalarField>(); // Return an empty field (actually, a null pointer to a volScalarField).
+tmp<volScalarField> weightFactors::Raeini::weight(const fvMesh& mesh) const{
+	// First lookup the required fields.
+	const volScalarField* alphaPtr;
+//    if(mesh.foundObject<volScalarField>(alphaName_)){
+        alphaPtr = &mesh.lookupObject<volScalarField>(alphaName_);
+//    }else{
+    	// Try a common name or error.
+//    	alphaPtr = &mesh.lookupObject<volScalarField>("alpha");
+//    }
+    const volScalarField& alpha = *alphaPtr;
+
+//    Info << "(Raeini.C) alpha.instance() = " << alphaPtr->instance() << endl;
+
+    // Limit alpha to prevent FPE
+    const volScalarField limitedAlpha
+    (
+        "limitedAlpha1",
+        min(max(alpha, scalar(0)), scalar(1))
+    );
+
+    // Then calculate the weight factor.
+    return tmp<volScalarField>
+    (
+		new volScalarField(
+			IOobject
+			(
+				"weightFactor(Raeini)",
+				mesh.time().timeName(),
+				mesh,
+				IOobject::NO_READ,
+				IOobject::NO_WRITE
+			),
+			sqrt(limitedAlpha*(scalar(1)-limitedAlpha) + SMALL)
+    	)
+    );
 }
 
 } // End namespace Foam

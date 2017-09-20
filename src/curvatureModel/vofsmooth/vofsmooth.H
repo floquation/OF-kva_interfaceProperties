@@ -57,9 +57,9 @@ class vofsmooth
 
 		volScalarField alphaSmooth_; // Add smoothed alpha field as a member data to keep it in the objectRegistry.
 
-		autoPtr<Foam::vofsmooth::smootherKernel<scalar>> alphaSmoother_;
-		autoPtr<Foam::vofsmooth::smootherKernel<vector>> gradientAlphaSmoother_;
-		autoPtr<Foam::vofsmooth::smootherKernel<scalar>> curvatureSmoother_;
+		autoPtr<Foam::smoothers::smootherKernel<scalar>> alphaSmoother_;
+		autoPtr<Foam::smoothers::smootherKernel<vector>> gradientAlphaSmoother_;
+		autoPtr<Foam::smoothers::smootherKernel<scalar>> curvatureSmoother_;
 
 	// Private Member Functions
 

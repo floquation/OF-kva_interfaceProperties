@@ -23,40 +23,19 @@ License
 
 \*---------------------------------------------------------------------------*/
 
-#include "weightedSmootherKernel.H"
-
-namespace Foam
-{
-
 // * * * * * * * * * * * * * * * * Constructors  * * * * * * * * * * * * * * //
 
 template<class Type>
-Foam::vofsmooth::weightedSmootherKernel<Type>::weightedSmootherKernel
+Foam::smoothers::noneSmoother<Type>::noneSmoother
 (
 	const word& name,
 	const dictionary& dict
+//	Istream& is
 )
 :
-	smootherKernel<Type>(name),
-	weight_(Foam::vofsmooth::weightFactor::New(name,dict.subDict("weightFactor")))
-{}
-
-template<class Type>
-Foam::vofsmooth::weightedSmootherKernel<Type>::weightedSmootherKernel
-(
-	const word& name,
-	weightFactor* weight
-)
-:
-	smootherKernel<Type>(name),
-	weight_(weight)
-{}
-
-// * * * * * * * * * * * * * * Member Functions  * * * * * * * * * * * * * * //
-
-
-// ************************************************************************* //
-
+	smootherKernel<Type>(name)
+{
 }
+
 
 // ************************************************************************* //

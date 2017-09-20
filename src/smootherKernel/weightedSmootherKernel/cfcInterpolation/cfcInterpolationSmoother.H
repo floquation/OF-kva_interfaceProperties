@@ -32,16 +32,16 @@ SourceFiles
 
 \*---------------------------------------------------------------------------*/
 
-#ifndef vofsmooth_cskSmoother_H
-#define vofsmooth_cskSmoother_H
+#ifndef smoothers_cfcInterpolationSmoother_H
+#define smoothers_cfcInterpolationSmoother_H
 
-#include "smootherKernel.H"
+#include "weightedSmootherKernel.H"
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
 namespace Foam
 {
-namespace vofsmooth
+namespace smoothers
 {
 
 /*---------------------------------------------------------------------------*\
@@ -49,53 +49,62 @@ namespace vofsmooth
 \*---------------------------------------------------------------------------*/
 
 template<class Type>
-class cskSmoother
+class cfcInterpolationSmoother
 :
-    public smootherKernel<Type>
+    public weightedSmootherKernel<Type>
 {
     // Private data
 
 		int numSmoothingIterations_;
-		float Csk_;
-		autoPtr<Foam::vofsmooth::smootherKernel<Type>> smoother_;
 
 	// Private Member Functions
 
 public:
 
     //- Runtime type information
-        TypeName("Csk");
+        TypeName("interpolate");
 
     // Constructors
 
-        //- Construct from components
-        cskSmoother
+        //- Construct from dictionary
+        cfcInterpolationSmoother
         (
 			const word& name,
 			const dictionary & dict
-//			Istream& is
+        );
+
+        //- Construct from components
+        cfcInterpolationSmoother
+        (
+			const word& name,
+			int numIts,
+			weightFactors::weightFactor* weight
         );
 
 
     //- Destructor
-		virtual ~cskSmoother(){}
+		virtual ~cfcInterpolationSmoother(){}
 
 
     // Member Functions
 
 		virtual tmp<GeometricField<Type, fvPatchField, volMesh>> smoothen(const GeometricField<Type, fvPatchField, volMesh>& fld) const;
+		virtual tmp<GeometricField<Type, fvPatchField, volMesh>> smoothen(
+			const GeometricField<Type, fvPatchField, volMesh>& fld,
+			const tmp<volScalarField>& tweight
+		) const;
 };
 
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
-} // End namespace vofsmooth
+} // End namespace smoothers
 } // End namespace Foam
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
 #ifdef NoRepository
-    #include "cskSmoother.C"
+    #include "cfcInterpolationSmoother.C"
 #endif
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //

@@ -21,83 +21,39 @@ License
     You should have received a copy of the GNU General Public License
     along with OpenFOAM.  If not, see <http://www.gnu.org/licenses/>.
 
-Class
-    Foam::weightFactor
-
 Description
     TODO
 
-SourceFiles
-    weightFactor.C
-
 \*---------------------------------------------------------------------------*/
 
-#ifndef vofsmooth_weightFactors_unweighted_H
-#define vofsmooth_weightFactors_unweighted_H
-
-#include "weightFactor.H"
+#include "smootherKernel.H"
+#include "HashTable.H"
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
 namespace Foam
 {
-namespace vofsmooth
-{
-namespace weightFactors
-{
-
-
-/*---------------------------------------------------------------------------*\
-                           Class weightFactor Declaration
-\*---------------------------------------------------------------------------*/
-
-class unweighted
-:
-		public weightFactor
-{
-    // Private data
-
-//	const volScalarField& unitWeight;
-
-protected:
-
-    // Protected data
-
-public:
-
-    //- Runtime type information
-        TypeName("unweighted");
-
-	// Constructors
-
-		unweighted(
-			const word& name,
-			const dictionary& dict
-		);
-
-		unweighted(
-			const word& name
-		);
-
-    //- Destructor
-
-		virtual ~unweighted();
-
-    // Member Functions
-
-		virtual tmp<volScalarField> weight(const fvMesh& mesh) const;
-
-};
-
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
-} // End namespace weightFactors
-} // End namespace vofsmooth
+namespace smoothers
+{
+
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+// Define the constructor function hash tables
+
+defineTemplateRunTimeSelectionTable(smootherKernel<scalar>, Istream);
+defineTemplateRunTimeSelectionTable(smootherKernel<vector>, Istream);
+defineTemplateRunTimeSelectionTable(smootherKernel<sphericalTensor>, Istream);
+defineTemplateRunTimeSelectionTable(smootherKernel<symmTensor>, Istream);
+defineTemplateRunTimeSelectionTable(smootherKernel<tensor>, Istream);
+
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+} // End namespace smoothers
+
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
 } // End namespace Foam
-
-// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
-
-#endif
 
 // ************************************************************************* //

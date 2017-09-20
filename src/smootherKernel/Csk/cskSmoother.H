@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2011-2016 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2011-2015 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -21,39 +21,85 @@ License
     You should have received a copy of the GNU General Public License
     along with OpenFOAM.  If not, see <http://www.gnu.org/licenses/>.
 
+Class
+    Foam::vofsmooth::smootherKernels::none
+
 Description
     TODO
 
+SourceFiles
+    none.C
+
 \*---------------------------------------------------------------------------*/
 
+#ifndef smoothers_cskSmoother_H
+#define smoothers_cskSmoother_H
+
 #include "smootherKernel.H"
-#include "HashTable.H"
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
 namespace Foam
 {
-
-// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
-
-namespace vofsmooth
+namespace smoothers
 {
 
+/*---------------------------------------------------------------------------*\
+                           Class normal Declaration
+\*---------------------------------------------------------------------------*/
+
+template<class Type>
+class cskSmoother
+:
+    public smootherKernel<Type>
+{
+    // Private data
+
+		int numSmoothingIterations_;
+		float Csk_;
+		autoPtr<Foam::smoothers::smootherKernel<Type>> smoother_;
+
+	// Private Member Functions
+
+public:
+
+    //- Runtime type information
+        TypeName("Csk");
+
+    // Constructors
+
+        //- Construct from components
+        cskSmoother
+        (
+			const word& name,
+			const dictionary & dict
+//			Istream& is
+        );
+
+
+    //- Destructor
+		virtual ~cskSmoother(){}
+
+
+    // Member Functions
+
+		virtual tmp<GeometricField<Type, fvPatchField, volMesh>> smoothen(const GeometricField<Type, fvPatchField, volMesh>& fld) const;
+};
+
+
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
-// Define the constructor function hash tables
 
-defineTemplateRunTimeSelectionTable(smootherKernel<scalar>, Istream);
-defineTemplateRunTimeSelectionTable(smootherKernel<vector>, Istream);
-defineTemplateRunTimeSelectionTable(smootherKernel<sphericalTensor>, Istream);
-defineTemplateRunTimeSelectionTable(smootherKernel<symmTensor>, Istream);
-defineTemplateRunTimeSelectionTable(smootherKernel<tensor>, Istream);
-
-// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
-
-} // End namespace vofsmooth
-
-// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
-
+} // End namespace smoothers
 } // End namespace Foam
+
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+#ifdef NoRepository
+    #include "cskSmoother.C"
+#endif
+
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+#endif
 
 // ************************************************************************* //

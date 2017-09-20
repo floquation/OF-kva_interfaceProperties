@@ -32,16 +32,17 @@ SourceFiles
 
 \*---------------------------------------------------------------------------*/
 
-#ifndef vofsmooth_noneSmoother_H
-#define vofsmooth_noneSmoother_H
+#ifndef smoothers_weightedSmootherKernel_H
+#define smoothers_weightedSmootherKernel_H
 
 #include "smootherKernel.H"
+#include "weightFactor.H"
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
 namespace Foam
 {
-namespace vofsmooth
+namespace smoothers
 {
 
 /*---------------------------------------------------------------------------*\
@@ -49,7 +50,7 @@ namespace vofsmooth
 \*---------------------------------------------------------------------------*/
 
 template<class Type>
-class noneSmoother
+class weightedSmootherKernel
 :
     public smootherKernel<Type>
 {
@@ -57,44 +58,58 @@ class noneSmoother
 
 	// Private Member Functions
 
+protected:
+
+	// Protected data
+
+		autoPtr<weightFactors::weightFactor> weight_;
+
 public:
 
     //- Runtime type information
-        TypeName("none");
+//	    virtual const word& type() const = 0;
+	    //TypeName("weightedSmootherKernel"); // KVA note: cannot do this with a templated base class.
 
     // Constructors
 
-        //- Construct from components
-        noneSmoother
+        //- Construct from dictionary
+        weightedSmootherKernel
         (
 			const word& name,
-			const dictionary& dict
-//			Istream& is
+			const dictionary & dict
+        );
+
+        //- Construct from components
+        weightedSmootherKernel
+        (
+			const word& name,
+			weightFactors::weightFactor* weight
         );
 
 
     //- Destructor
-		virtual ~noneSmoother(){}
+		virtual ~weightedSmootherKernel(){}
 
 
     // Member Functions
 
-		virtual tmp<GeometricField<Type, fvPatchField, volMesh>> smoothen(const GeometricField<Type, fvPatchField, volMesh>& fld) const {
-			// Do nothing to "fld", because "none" does not do any smoothing.
-			return tmp<GeometricField<Type, fvPatchField, volMesh>>(fld);
-		}
+		virtual tmp<GeometricField<Type, fvPatchField, volMesh>> smoothen(const GeometricField<Type, fvPatchField, volMesh>& fld) const = 0;
+		virtual tmp<GeometricField<Type, fvPatchField, volMesh>> smoothen(
+			const GeometricField<Type, fvPatchField, volMesh>& fld,
+			const tmp<volScalarField>& tweight
+		) const = 0;
 };
 
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
-} // End namespace vofsmooth
+} // End namespace smoothers
 } // End namespace Foam
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
 #ifdef NoRepository
-    #include "noneSmoother.C"
+    #include "weightedSmootherKernel.C"
 #endif
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //

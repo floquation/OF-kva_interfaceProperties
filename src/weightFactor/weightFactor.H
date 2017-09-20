@@ -2,7 +2,7 @@
   =========                 |
   \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
    \\    /   O peration     |
-    \\  /    A nd           | Copyright (C) 2011-2015 OpenFOAM Foundation
+    \\  /    A nd           | Copyright (C) 2011-2016 OpenFOAM Foundation
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
 License
@@ -22,90 +22,102 @@ License
     along with OpenFOAM.  If not, see <http://www.gnu.org/licenses/>.
 
 Class
-    Foam::vofsmooth::smootherKernels::none
+    Foam::weightFactor
 
 Description
     TODO
 
 SourceFiles
-    none.C
+    weightFactor.C
 
 \*---------------------------------------------------------------------------*/
 
-#ifndef vofsmooth_cfcInterpolationSmoother_H
-#define vofsmooth_cfcInterpolationSmoother_H
+#ifndef weightFactors_weightFactor_H
+#define weightFactors_weightFactor_H
 
-#include "weightedSmootherKernel.H"
+#include "volFields.H"
+#include "typeInfo.H"
+#include "runTimeSelectionTables.H"
+//#include "GeometricFields.H"
+//#include "IOstreams.H"
+#include "tmp.H"
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
 namespace Foam
 {
-namespace vofsmooth
+namespace weightFactors
 {
+
 
 /*---------------------------------------------------------------------------*\
-                           Class normal Declaration
+                           Class weightFactor Declaration
 \*---------------------------------------------------------------------------*/
 
-template<class Type>
-class cfcInterpolationSmoother
-:
-    public weightedSmootherKernel<Type>
+class weightFactor
 {
-    // Private data
+    // Private Member Functions
 
-		int numSmoothingIterations_;
+protected:
 
-	// Private Member Functions
+    // Protected data
+
+        word name_; // KVA: Added a name, like OpenFoam's "viscosityModel". I don't understand why.
 
 public:
 
     //- Runtime type information
-        TypeName("interpolate");
+        TypeName("weightFactor");
 
-    // Constructors
+    // Declare run-time constructor selection table
 
-        //- Construct from dictionary
-        cfcInterpolationSmoother
-        (
-			const word& name,
-			const dictionary & dict
-        );
+		declareRunTimeSelectionTable
+		(
+			autoPtr,
+			weightFactor,
+			Istream,
+			(
+				const word& name,
+				const dictionary& dict
+			),
+			(name, dict)
+		);
 
-        //- Construct from components
-        cfcInterpolationSmoother
-        (
-			const word& name,
-			int numIts,
-			weightFactor* weight
-        );
 
+	// Constructors
+
+		weightFactor(
+			const word& name
+		);
+
+	// Selectors
+
+		//- Select based on given type name
+		static autoPtr<weightFactor> New(const word& name, const dictionary& dict);
 
     //- Destructor
-		virtual ~cfcInterpolationSmoother(){}
 
+		virtual ~weightFactor();
 
     // Member Functions
 
-		virtual tmp<GeometricField<Type, fvPatchField, volMesh>> smoothen(const GeometricField<Type, fvPatchField, volMesh>& fld) const;
-		virtual tmp<GeometricField<Type, fvPatchField, volMesh>> smoothen(
-			const GeometricField<Type, fvPatchField, volMesh>& fld,
-			const tmp<volScalarField>& tweight
-		) const;
+		virtual tmp<volScalarField> weight(const fvMesh& mesh) const = 0;
+
+//		template<class Type> // KVA note: virtual method cannot be templated in C++. Instead, template the entire class.
+//		virtual void smoothen(GeometricField<Type, fvPatchField, volMesh>& fld) const = 0;
+//		virtual tmp<GeometricField<Type, fvPatchField, volMesh>> smoothen(const GeometricField<Type, fvPatchField, volMesh>& fld) const = 0;
+
+//		virtual GeometricField<Type, fvPatchField, volMesh> smoothen(GeometricField<Type, fvPatchField, volMesh>& fld) const{
+//			return fld;
+//		}
+
 };
 
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
-} // End namespace vofsmooth
+} // End namespace weightFactors
 } // End namespace Foam
-
-// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
-
-#ifdef NoRepository
-    #include "cfcInterpolationSmoother.C"
-#endif
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 

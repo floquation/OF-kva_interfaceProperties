@@ -32,7 +32,7 @@ namespace Foam
 // * * * * * * * * * * * * * * * * Constructors  * * * * * * * * * * * * * * //
 
 template<class Type>
-Foam::vofsmooth::cfcInterpolationSmoother<Type>::cfcInterpolationSmoother
+Foam::smoothers::cfcInterpolationSmoother<Type>::cfcInterpolationSmoother
 (
 	const word& name,
 	const dictionary& dict
@@ -52,11 +52,11 @@ Foam::vofsmooth::cfcInterpolationSmoother<Type>::cfcInterpolationSmoother
 }
 
 template<class Type>
-Foam::vofsmooth::cfcInterpolationSmoother<Type>::cfcInterpolationSmoother
+Foam::smoothers::cfcInterpolationSmoother<Type>::cfcInterpolationSmoother
 (
 	const word& name,
 	int numIts,
-	weightFactor* weight
+	weightFactors::weightFactor* weight
 )
 :
 	weightedSmootherKernel<Type>(name, weight),
@@ -76,7 +76,7 @@ Foam::vofsmooth::cfcInterpolationSmoother<Type>::cfcInterpolationSmoother
 
 template<class Type>
 tmp<GeometricField<Type, fvPatchField, volMesh>>
-Foam::vofsmooth::cfcInterpolationSmoother<Type>::smoothen(const GeometricField<Type, fvPatchField, volMesh>& fld) const{
+Foam::smoothers::cfcInterpolationSmoother<Type>::smoothen(const GeometricField<Type, fvPatchField, volMesh>& fld) const{
 	Info << "(cfcInterpolationSmoother) Smoothing(fld) " << fld.name() << "." << endl;
 //
 //	// Declare return
@@ -125,7 +125,7 @@ Foam::vofsmooth::cfcInterpolationSmoother<Type>::smoothen(const GeometricField<T
 
 template<class Type>
 tmp<GeometricField<Type, fvPatchField, volMesh>>
-Foam::vofsmooth::cfcInterpolationSmoother<Type>::smoothen(
+Foam::smoothers::cfcInterpolationSmoother<Type>::smoothen(
 	const GeometricField<Type, fvPatchField, volMesh>& fld,
 	const tmp<volScalarField>& tweight
 ) const{

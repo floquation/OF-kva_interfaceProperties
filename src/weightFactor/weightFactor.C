@@ -29,7 +29,7 @@ License
 
 namespace Foam
 {
-namespace vofsmooth
+namespace weightFactors
 {
 	defineTypeNameAndDebug(weightFactor, 0);
 	defineRunTimeSelectionTable(weightFactor, Istream);
@@ -38,7 +38,7 @@ namespace vofsmooth
 
 // * * * * * * * * * * * * * * * * Constructors  * * * * * * * * * * * * * * //
 
-Foam::vofsmooth::weightFactor::weightFactor
+Foam::weightFactors::weightFactor::weightFactor
 (
 	const word& name
 )
@@ -50,13 +50,13 @@ Foam::vofsmooth::weightFactor::weightFactor
 
 // * * * * * * * * * * * * * * * * Destructor  * * * * * * * * * * * * * * * //
 
-Foam::vofsmooth::weightFactor::~weightFactor()
+Foam::weightFactors::weightFactor::~weightFactor()
 {}
 
 
 // * * * * * * * * * * * * * * * * Selectors * * * * * * * * * * * * * * * * //
 
-Foam::autoPtr< Foam::vofsmooth::weightFactor > Foam::vofsmooth::weightFactor::New
+Foam::autoPtr< Foam::weightFactors::weightFactor > Foam::weightFactors::weightFactor::New
 (
 	const word& name,
 	const dictionary& dict

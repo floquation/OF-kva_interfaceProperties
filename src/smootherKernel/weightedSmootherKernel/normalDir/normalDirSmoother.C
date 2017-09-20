@@ -33,7 +33,7 @@ namespace Foam
 // * * * * * * * * * * * * * * * * Constructors  * * * * * * * * * * * * * * //
 
 template<class Type>
-Foam::vofsmooth::normalDirSmoother<Type>::normalDirSmoother
+Foam::smoothers::normalDirSmoother<Type>::normalDirSmoother
 (
 	const word& name,
 	const dictionary& dict
@@ -70,7 +70,7 @@ Foam::vofsmooth::normalDirSmoother<Type>::normalDirSmoother
 
 template<class Type>
 tmp<GeometricField<Type, fvPatchField, volMesh>>
-Foam::vofsmooth::normalDirSmoother<Type>::smoothen(const GeometricField<Type, fvPatchField, volMesh>& fld) const{
+Foam::smoothers::normalDirSmoother<Type>::smoothen(const GeometricField<Type, fvPatchField, volMesh>& fld) const{
 	Info << "(normalDirSmoother) Smoothing(fld) " << fld.name() << "." << endl;
 
 	// Compute weightFactor
@@ -83,7 +83,7 @@ Foam::vofsmooth::normalDirSmoother<Type>::smoothen(const GeometricField<Type, fv
 
 template<class Type>
 tmp<GeometricField<Type, fvPatchField, volMesh>>
-Foam::vofsmooth::normalDirSmoother<Type>::smoothen(
+Foam::smoothers::normalDirSmoother<Type>::smoothen(
 	const GeometricField<Type, fvPatchField, volMesh>& fld,
 	const tmp<volScalarField>& tweight
 ) const{
