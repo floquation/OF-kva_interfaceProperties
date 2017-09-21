@@ -77,17 +77,23 @@ Foam::curvatureModel::~curvatureModel()
 Foam::autoPtr<Foam::curvatureModel> Foam::curvatureModel::New
 (
 	const word& name,
-	const interfaceProperties& interfaceProperties
+	const interfaceProperties& interfaceProperties,
+	bool quiet
 )
 {
 	// The type should be defined with an entry "curvatureModel" in transportProperties.
 	// For backwards compatibility, if the entry is not specified, use the "normal" model by default.
     const word modelType(interfaceProperties.transportPropertiesDict_.lookupOrDefault<word>("curvatureModel","normal"));
+
     if(!interfaceProperties.transportPropertiesDict_.found("curvatureModel")){
 		WarningInFunction
-			<< "Keyword \"curvatureModel\" not found in transportProperties dictionary. Using the default instead." << endl;
-    }
-    Info<< "Selecting curvatureModel " << modelType << endl;
+			<< "Selecting default curvatureModel normal." << nl
+			<< "    To set a different type, add the \"type\" keyword to " << interfaceProperties.transportPropertiesDict_.name() << "." << endl
+			<< "Valid curvatureModel types are :" << endl
+			<< dictionaryConstructorTablePtr_->sortedToc();
+	}else{
+	    if (!quiet) Info<< "Selecting curvatureModel " << modelType << endl;
+	}
 
     if (!dictionaryConstructorTablePtr_)
     {
@@ -96,12 +102,8 @@ Foam::autoPtr<Foam::curvatureModel> Foam::curvatureModel::New
             << exit(FatalError);
     }
 
-//    Info<< "dictionaryConstructorTablePtr_ exists" << endl;
-
     typename dictionaryConstructorTable::iterator cstrIter =
     	dictionaryConstructorTablePtr_->find(modelType);
-
-//    Info<< "type sought for" << endl;
 
     if (cstrIter == dictionaryConstructorTablePtr_->end())
     {
@@ -113,10 +115,7 @@ Foam::autoPtr<Foam::curvatureModel> Foam::curvatureModel::New
             << exit(FatalError);
     }
 
-//    Info<< "type found in table" << endl;
-
-
-    return autoPtr<curvatureModel>(cstrIter()(name, interfaceProperties, modelType));
+    return autoPtr<curvatureModel>(cstrIter()(modelType+"("+name+")", interfaceProperties, modelType));
 }
 
 

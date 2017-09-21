@@ -93,7 +93,7 @@ public:
 	// Selectors
 
 		//- Select based on given type name
-		static autoPtr<weightFactor> New(const word& name, const dictionary& dict);
+		static autoPtr<weightFactor> New(const word& name, const dictionary& dict, bool quiet = false);
 
     //- Destructor
 
@@ -110,6 +110,12 @@ public:
 //		virtual GeometricField<Type, fvPatchField, volMesh> smoothen(GeometricField<Type, fvPatchField, volMesh>& fld) const{
 //			return fld;
 //		}
+
+		//- Return name
+		const word& name() const
+		{
+		    return name_;
+		}
 
 };
 

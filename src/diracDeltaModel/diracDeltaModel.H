@@ -93,7 +93,7 @@ public:
 	// Selectors
 
 		//- Select based on given type name
-		static autoPtr<diracDeltaModel> New(const word& name, const dictionary& dict);
+		static autoPtr<diracDeltaModel> New(const word& name, const dictionary& dict, bool quiet = false);
 
     //- Destructor
 
@@ -104,6 +104,11 @@ public:
 		// Returns an approximation to the Dirac delta function, based on a Heaviside field (e.g. the VOF field).
 		virtual tmp<surfaceScalarField> delta(const volScalarField& alpha) const = 0;
 
+		//- Return name
+		const word& name() const
+		{
+		    return name_;
+		}
 };
 
 

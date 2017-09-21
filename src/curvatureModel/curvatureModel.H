@@ -111,7 +111,7 @@ public:
 	// Selectors
 
 		//- Select based on given type name
-		static autoPtr<curvatureModel> New(const word& type, const interfaceProperties& interfaceProperties);
+		static autoPtr<curvatureModel> New(const word& type, const interfaceProperties& interfaceProperties, bool quiet = false);
 
 
 	//- Destructor
@@ -130,6 +130,12 @@ public:
         // I've had the child pass its typename, such that the parent could manage the dictionary.
         // Otherwisely every child would have to manage its own dictionary in an identical way, which is code duplication.
         bool read(const word& childType);
+
+		//- Return name
+		const word& name() const
+		{
+		    return name_;
+		}
 };
 
 

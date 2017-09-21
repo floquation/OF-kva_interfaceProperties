@@ -59,17 +59,21 @@ Foam::diracDeltaModels::diracDeltaModel::~diracDeltaModel()
 Foam::autoPtr< Foam::diracDeltaModels::diracDeltaModel > Foam::diracDeltaModels::diracDeltaModel::New
 (
 	const word& name,
-	const dictionary& dict
+	const dictionary& dict,
+	bool quiet
 )
 {
 	word modelType = dict.lookupOrDefault<word>("type","snGrad");
-    if(!dict.found("type")){
-		WarningInFunction
-			<< "Keyword \"type\" not found in dictionary. Using the default (snGrad) instead." << endl;
-    }
-    // Next entries are the arguments to be passed to the constructor of modelType.
 
-    Info<< "Selecting diracDeltaModel " << modelType << " for " << name << endl;
+    if (!dict.found("type")){
+		WarningInFunction
+			<< "Selecting default deltaModel snGrad for " << name << "." << nl
+			<< "    To set a different type, add the \"type\" keyword to " << dict.name() << "." << endl
+			<< "Valid deltaModels types are :" << endl
+			<< dictConstructorTablePtr_->sortedToc();
+	}else{
+		if (!quiet) Info<< "Selecting Dirac-delta-model " << modelType << " for " << name << endl;
+	}
 
     if (!dictConstructorTablePtr_)
     {

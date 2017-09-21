@@ -51,9 +51,16 @@ Foam::smoothers::cskSmoother<Type>::cskSmoother
 	{
 		int numSmoothingIterationsDefault = 2;
 		WarningInFunction
-			<< "Specified numIts = " << numSmoothingIterations_ << "." << nl
+			<< "Specified numIts = " << numSmoothingIterations_ << " in " << dict.name() << "." << nl
 			<< "    " << "This value must be positive. Assuming the default value " << numSmoothingIterationsDefault << " instead." << endl;
 		numSmoothingIterations_ = numSmoothingIterationsDefault;
+	}
+
+	if (!dict.found("Csk"))
+	{
+		WarningInFunction
+			<< "Entry Csk was not found in " << dict.name() << "." << nl
+			<< "    " << "Assuming the default value " << 0.5 << " instead." << endl;
 	}
 }
 

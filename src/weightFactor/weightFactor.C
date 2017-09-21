@@ -59,23 +59,21 @@ Foam::weightFactors::weightFactor::~weightFactor()
 Foam::autoPtr< Foam::weightFactors::weightFactor > Foam::weightFactors::weightFactor::New
 (
 	const word& name,
-	const dictionary& dict
+	const dictionary& dict,
+	bool quiet
 )
 {
-//	// First entry of "is" is the modelType.
-//    token entry;
-//    is.read(entry);
-    word modelType;
-//    modelType = entry.wordToken();
-	modelType = dict.lookupOrDefault<word>("type","unweighted");
-    if(!dict.found("type")){
-		WarningInFunction
-			<< "Keyword \"type\" not found in dictionary. Using the default (unweighted) instead." << endl;
-    }
-    // Next entries are the arguments to be passed to the constructor of modelType.
+	word modelType = dict.lookupOrDefault<word>("type","unweighted");
 
-    Info<< "Selecting weightFactor " << modelType << " for " << name << endl;
-//    Info<< "label:" << readLabel(is) << endl;
+    if (!dict.found("type")){
+		WarningInFunction
+			<< "Selecting default weightFactor unweighted for " << name << "." << nl
+			<< "    To set a different type, add the \"type\" keyword to " << dict.name() << "." << endl
+			<< "Valid weightFactor types are :" << endl
+			<< IstreamConstructorTablePtr_->sortedToc();
+	}else{
+		if (!quiet) Info<< "Selecting weightFactor " << modelType << " for " << name << endl;
+	}
 
     if (!IstreamConstructorTablePtr_)
     {
@@ -84,12 +82,8 @@ Foam::autoPtr< Foam::weightFactors::weightFactor > Foam::weightFactors::weightFa
             << exit(FatalError);
     }
 
-//    Info<< "dictionaryConstructorTablePtr_ exists" << endl;
-
     typename IstreamConstructorTable::iterator cstrIter =
     		IstreamConstructorTablePtr_->find(modelType);
-
-//    Info<< "type sought for" << endl;
 
     if (cstrIter == IstreamConstructorTablePtr_->end())
     {
@@ -101,9 +95,7 @@ Foam::autoPtr< Foam::weightFactors::weightFactor > Foam::weightFactors::weightFa
             << exit(FatalError);
     }
 
-//    Info<< "type found in table" << endl;
-
-    return autoPtr<weightFactor>(cstrIter()(modelType+"("+name+")", dict));
+    return autoPtr<weightFactor>(cstrIter()(modelType+"Weight("+name+")", dict));
 }
 
 // ************************************************************************* //

@@ -62,7 +62,8 @@ Foam::autoPtr< Foam::smoothers::smootherKernel<Type> >
 Foam::smoothers::smootherKernel<Type>::New
 (
 	const word& name,
-	const dictionary& dict
+	const dictionary& dict,
+	bool quiet
 //	Istream& is
 )
 {
@@ -77,7 +78,16 @@ Foam::smoothers::smootherKernel<Type>::New
     modelType = dict.lookupOrDefault<word>("type","none");
     // Next entries are the arguments to be passed to the constructor of modelType.
 
-    Info<< "Selecting smootherKernel " << modelType << " for " << name << endl;
+    if (!dict.found("type")){
+    	WarningInFunction
+			<< "Selecting default smootherKernel none for " << name << "." << nl
+			<< "    To set a different type, add the \"type\" keyword to " << dict.name() << "." << endl
+			<< "Valid smootherKernel types are :" << endl
+			<< IstreamConstructorTablePtr_->sortedToc();
+    }else{
+    	if (!quiet) Info<< "Selecting smootherKernel " << modelType << " for " << name << endl;
+    }
+
 //    Info<< "label:" << readLabel(is) << endl;
 
     if (!IstreamConstructorTablePtr_)
@@ -106,8 +116,7 @@ Foam::smoothers::smootherKernel<Type>::New
 
 //    Info<< "type found in table" << endl;
 
-
-    return autoPtr<smootherKernel>(cstrIter()(modelType+"("+name+")", dict));
+    return autoPtr<smootherKernel>(cstrIter()(modelType+"Smoother("+name+")", dict));
 }
 
 // * * * * * * * * * * * * * * Member Functions  * * * * * * * * * * * * * * //

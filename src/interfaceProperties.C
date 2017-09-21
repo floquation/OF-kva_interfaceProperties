@@ -246,24 +246,22 @@ bool Foam::interfaceProperties::readSurfaceTensionModel() // KVA
     	}
 
     	densityWeighted_ = stfDict.lookupOrDefault("densityWeighted",false);
-    	interpolateKWeight_ = weightFactors::weightFactor::New("weight(interpolateK)", stfDict.subDict("interpolateCurvature").subDict("weightFactor"));
-    	diracDeltaModel_ = diracDeltaModels::diracDeltaModel::New( alpha1_.name(), stfDict.subDict("deltaModel"));
+    	interpolateKWeight_ = weightFactors::weightFactor::New("interpolateK", stfDict.subDict("interpolateCurvature").subDict("weightFactor"), true);
+    	diracDeltaModel_ = diracDeltaModels::diracDeltaModel::New( alpha1_.name(), stfDict.subDict("deltaModel"), true);
     }else{ // Default everything
 		WarningInFunction
-			<< "Subdictionary surfaceTensionForceModel not found. Selecting the following default values instead:" << nl
-			<< "    " << "densityWeighted = " << false << endl;
+			<< "Subdictionary surfaceTensionForceModel not found in "
+			<< transportPropertiesDict_.name() << "." << nl
+			<< " Selecting default values instead." << endl;
 
     	densityWeighted_ = false;
-    	interpolateKWeight_.reset(new weightFactors::unweighted("weight(interpolateK)"));
+    	interpolateKWeight_.reset(new weightFactors::unweighted("interpolateK"));
     	diracDeltaModel_.reset(new diracDeltaModels::snGradDeltaModel(alpha1_.name()));
     }
 
-    // TODO: What "name" should I pass? Who should add what to the name's content?
-    //       It shouldn't be the caller's job to add e.g. "weight" to a weightFactor, right?
-
-    Info	<< "Selecting surfaceTensionModel CSF(" << nl
+    Info	<< "Selecting surfaceTensionModel CSF(" << nl // Only CSF supported, although deltaModel may be FSF or SSF.
 			<< "    densityWeighted=" << densityWeighted_ << "," << nl
-			<< "    weight(interpolateK)=" << interpolateKWeight_->type() << "," << nl
+			<< "    interpolateCurvature=weightFactor(" << interpolateKWeight_->type() << ")," << nl
 			<< "    deltaModel=" << diracDeltaModel_->type() << nl
 			<< ")" << endl;
 
