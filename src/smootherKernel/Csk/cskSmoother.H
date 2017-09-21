@@ -56,7 +56,7 @@ class cskSmoother
     // Private data
 
 		int numSmoothingIterations_;
-		float Csk_;
+		scalar Csk_;
 		autoPtr<Foam::smoothers::smootherKernel<Type>> smoother_;
 
 	// Private Member Functions

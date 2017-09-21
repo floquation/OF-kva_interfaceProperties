@@ -40,13 +40,11 @@ Foam::smoothers::cskSmoother<Type>::cskSmoother
 :
 	smootherKernel<Type>(name),
 	numSmoothingIterations_(dict.lookupOrDefault<label>("numIts",0)),
-	Csk_(dict.lookupOrDefault<float>("Csk",0.5)),
+	Csk_(dict.lookupOrDefault<scalar>("Csk",0.5)),
 	smoother_(
 		Foam::smoothers::smootherKernel<Type>::New(name,dict.subDict("smoother"))
 	)
 {
-//	Info << "Dict contained numSmoothingIterations_ = " << numSmoothingIterations_ << endl; // works!
-
 	if (numSmoothingIterations_ <= 0)
 	{
 		int numSmoothingIterationsDefault = 2;
@@ -56,11 +54,19 @@ Foam::smoothers::cskSmoother<Type>::cskSmoother
 		numSmoothingIterations_ = numSmoothingIterationsDefault;
 	}
 
+	scalar CskDefault = 0.5;
+	if (Csk_ < 0 || Csk_ > 1){
+		WarningInFunction
+			<< "Specified Csk = " << Csk_ << " in " << dict.name() << "." << nl
+			<< "    " << "This value must be between 0 and 1. Assuming the default value " << CskDefault << " instead." << endl;
+		Csk_ = CskDefault;
+	}
 	if (!dict.found("Csk"))
 	{
 		WarningInFunction
 			<< "Entry Csk was not found in " << dict.name() << "." << nl
-			<< "    " << "Assuming the default value " << 0.5 << " instead." << endl;
+			<< "    " << "Assuming the default value " << CskDefault << " instead." << endl;
+		Csk_ = CskDefault;
 	}
 }
 
