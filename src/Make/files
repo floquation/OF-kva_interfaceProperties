@@ -13,6 +13,10 @@ curvatureModel/curvatureModel.C
 curvatureModel/normal/normal.C
 curvatureModel/vofsmooth/vofsmooth.C
 
+diracDeltaModel/diracDeltaModel.C
+diracDeltaModel/snGradDeltaModel/snGradDeltaModel.C
+diracDeltaModel/snGradPCDeltaModel/snGradPCDeltaModel.C
+
 interfaceProperties.C
 
 LIB = $(FOAM_USER_LIBBIN)/libkva_interfaceProperties

@@ -1,0 +1,86 @@
+/*---------------------------------------------------------------------------*\
+  =========                 |
+  \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
+   \\    /   O peration     |
+    \\  /    A nd           | Copyright (C) 2011-2016 OpenFOAM Foundation
+     \\/     M anipulation  |
+-------------------------------------------------------------------------------
+License
+    This file is part of OpenFOAM.
+
+    OpenFOAM is free software: you can redistribute it and/or modify it
+    under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    OpenFOAM is distributed in the hope that it will be useful, but WITHOUT
+    ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+    FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
+    for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with OpenFOAM.  If not, see <http://www.gnu.org/licenses/>.
+
+\*---------------------------------------------------------------------------*/
+
+#include "addToRunTimeSelectionTable.H"
+#include "snGradDeltaModel.H"
+#include "fvcSnGrad.H"
+
+// * * * * * * * * * * * * * * Static Data Members * * * * * * * * * * * * * //
+
+namespace Foam
+{
+namespace diracDeltaModels
+{
+    defineTypeNameAndDebug(snGradDeltaModel, 0);
+    addToRunTimeSelectionTable
+    (
+    	diracDeltaModel,
+        snGradDeltaModel,
+		dict
+    );
+}
+}
+
+// * * * * * * * * * * * * * * * * Constructors  * * * * * * * * * * * * * * //
+
+Foam::diracDeltaModels::snGradDeltaModel::snGradDeltaModel
+(
+	const word& name,
+	const dictionary& dict
+)
+:
+	diracDeltaModel(name)
+{
+}
+
+Foam::diracDeltaModels::snGradDeltaModel::snGradDeltaModel
+(
+	const word& name
+)
+:
+	diracDeltaModel(name)
+{
+}
+
+
+// * * * * * * * * * * * * * * * * Destructor  * * * * * * * * * * * * * * * //
+
+Foam::diracDeltaModels::snGradDeltaModel::~snGradDeltaModel()
+{}
+
+// * * * * * * * * * * * * * * Member Functions  * * * * * * * * * * * * * * //
+
+namespace Foam{
+
+tmp<surfaceScalarField> diracDeltaModels::snGradDeltaModel::delta(const volScalarField& alpha) const{
+//	tmp<volScalarField> result(fvc::snGrad<scalar>(alpha));
+//	return result;
+	return fvc::snGrad<scalar>(alpha);
+}
+
+} // End namespace Foam
+
+
+// ************************************************************************* //

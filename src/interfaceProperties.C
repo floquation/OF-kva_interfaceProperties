@@ -29,9 +29,10 @@ License
 #include "surfaceInterpolate.H"
 //#include "fvcDiv.H" // KVA: no longer needed
 //#include "fvcGrad.H" // KVA: no longer needed
-#include "fvcSnGrad.H"
-#include "unweighted.H" // KVA
+//#include "fvcSnGrad.H" // KVA: no longer needed
 #include "fvcWeightedSurfaceInterpolate.H" // KVA
+#include "unweighted.H" // KVA
+#include "snGradDeltaModel.H" // KVA
 
 // * * * * * * * * * * * * * * * Static Member Data  * * * * * * * * * * * * //
 
@@ -180,10 +181,12 @@ Foam::interfaceProperties::interfaceProperties
 			"Kmodel",
 			*this
 		)
-	) // KVA warning:
+	), // KVA warning:
 	// "curvatureModel_" SHOULD be constructed last, otherwise "this" is only a partially constructed object.
 	// In the present implementation, it is *AT LEAST* crucial that "transportPropertiesDict_" is constructed,
 	//  because curvatureModel will access it in its constructor.
+
+	diracDeltaModel_()
 {
 	readSurfaceTensionModel(); // KVA
     calculateK(); // KVA warning: "curvatureModel_" MUST be constructed before this line.
@@ -203,9 +206,10 @@ Foam::interfaceProperties::surfaceTensionForce() const
 		);
 
 		const volScalarField rho(limitedAlpha1*rho1_ + (scalar(1) - limitedAlpha1)*rho2_);
-		return fvc::weightedInterpolate(sigmaK()*rho,tweight)*fvc::snGrad(alpha1_) * 2/(rho1_+rho2_);
+		return fvc::weightedInterpolate(sigmaK()*rho,tweight) * diracDeltaModel_->delta(alpha1_) * 2/(rho1_+rho2_);
 	}else{
-        return fvc::weightedInterpolate(sigmaK(),tweight)*fvc::snGrad(alpha1_);
+        return fvc::weightedInterpolate(sigmaK(),tweight) * diracDeltaModel_->delta(alpha1_); // KVA: Made this method use a separate class for the delta function approximation.
+//        return fvc::interpolate(sigmaK())*fvc::snGrad(alpha1_);
 	}
 }
 
@@ -233,7 +237,7 @@ bool Foam::interfaceProperties::read()
 
 bool Foam::interfaceProperties::readSurfaceTensionModel() // KVA
 {
-    if(transportPropertiesDict_.found("surfaceTensionForceModel")){ // Read from dict
+    if(transportPropertiesDict_.found("surfaceTensionForceModel")){ // Then read from dict
     	const dictionary& stfDict = transportPropertiesDict_.subDict("surfaceTensionForceModel");
         if(!stfDict.found("densityWeighted")){
     		WarningInFunction
@@ -243,6 +247,7 @@ bool Foam::interfaceProperties::readSurfaceTensionModel() // KVA
 
     	densityWeighted_ = stfDict.lookupOrDefault("densityWeighted",false);
     	interpolateKWeight_ = weightFactors::weightFactor::New("weight(interpolateK)", stfDict.subDict("interpolateCurvature").subDict("weightFactor"));
+    	diracDeltaModel_ = diracDeltaModels::diracDeltaModel::New( alpha1_.name(), stfDict.subDict("deltaModel"));
     }else{ // Default everything
 		WarningInFunction
 			<< "Subdictionary surfaceTensionForceModel not found. Selecting the following default values instead:" << nl
@@ -250,11 +255,16 @@ bool Foam::interfaceProperties::readSurfaceTensionModel() // KVA
 
     	densityWeighted_ = false;
     	interpolateKWeight_.reset(new weightFactors::unweighted("weight(interpolateK)"));
+    	diracDeltaModel_.reset(new diracDeltaModels::snGradDeltaModel(alpha1_.name()));
     }
 
-    Info << "Selecting surfaceTensionModel CSF("
-    		<< "densityWeighted=" << densityWeighted_
-    		<< ", weight(interpolateK)=" << interpolateKWeight_->type()
+    // TODO: What "name" should I pass? Who should add what to the name's content?
+    //       It shouldn't be the caller's job to add e.g. "weight" to a weightFactor, right?
+
+    Info	<< "Selecting surfaceTensionModel CSF(" << nl
+			<< "    densityWeighted=" << densityWeighted_ << "," << nl
+			<< "    weight(interpolateK)=" << interpolateKWeight_->type() << "," << nl
+			<< "    deltaModel=" << diracDeltaModel_->type() << nl
 			<< ")" << endl;
 
     return true;

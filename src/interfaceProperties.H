@@ -31,7 +31,7 @@ Description
     -# Correct the alpha boundary condition for dynamic contact angle.
     -# Calculate interface curvature.
 
-KVA_Modifications
+Modifications (Kevin van As = KVA)
 	.H/.C: Added field curvatureModel_
 	.H: curvatureModel is a friend class
 	.C: Replaced calculateK()'s content by a forward call to curvatureModel.
@@ -41,6 +41,9 @@ KVA_Modifications
     .H/.C: Added rho1_ and rho2_ to constructor/read
     .C: Added densityWeighted surface tension calculation to "surfaceTensionForce()".
     .H/.C: Added "densityWeighted_" switch as private variable and in read method
+
+    .H/.C: Made the curvature interpolation use an optional weightFactor with RTS.
+    .H/.C: Forwarded the delta function approximation (default: fvc::snGrad(alpha)) to a RTS class.
 
 SourceFiles
     interfaceProperties.C
@@ -55,6 +58,7 @@ SourceFiles
 #include "surfaceFields.H"
 #include "curvatureModel.H" // KVA
 #include "weightFactor.H" // KVA
+#include "diracDeltaModel.H" // KVA
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
@@ -97,6 +101,8 @@ class interfaceProperties
 
         friend class curvatureModel; // KVA: Allow curvatureModel to access private members (alpha1_, deltaN_, ...)
         autoPtr<curvatureModel> curvatureModel_; // KVA: class that computes the curvature (K_)
+
+        autoPtr<diracDeltaModels::diracDeltaModel> diracDeltaModel_; // KVA: class that approximates the delta function (default: fvc::snGrad(alpha)).
 
 
     // Private Member Functions
