@@ -52,19 +52,42 @@ Foam::diracDeltaModels::snGradPCDeltaModel::snGradPCDeltaModel
 )
 :
 	diracDeltaModel(name),
-	Cpc_(dict.lookupOrDefault<float>("Csk",0.5))
+	Cpc_(dict.lookupOrDefault<scalar>("Cpc",0.5))
 {
+	scalar CpcDefault = 0.5;
+	if (!( 0 <= Cpc_ && Cpc_ < 1 ))
+	{
+		WarningInFunction
+			<< "Specified Cpc = " << Cpc_ << " in " << dict.name() << "." << nl
+			<< "    " << "This value must be 0 <= Cpc < 1. Assuming the default value " << CpcDefault << " instead." << endl;
+		Cpc_ = CpcDefault;
+	}
+	if (!dict.found("Cpc"))
+	{
+		WarningInFunction
+			<< "Entry Cpc was not found in " << dict.name() << "." << nl
+			<< "    " << "Assuming the default value " << CpcDefault << " instead." << endl;
+		Cpc_ = CpcDefault;
+	}
 }
 
 Foam::diracDeltaModels::snGradPCDeltaModel::snGradPCDeltaModel
 (
 	const word& name,
-	float Cpc
+	scalar Cpc
 )
 :
 	diracDeltaModel(name),
 	Cpc_(Cpc)
 {
+	scalar CpcDefault = 0.5;
+	if (!( 0 <= Cpc_ && Cpc_ < 1 ))
+	{
+		WarningInFunction
+			<< "Specified Cpc = " << Cpc_ << " somewhere in the code (programming logic error!)." << nl
+			<< "    " << "This value must be 0 <= Cpc < 1. Assuming the default value " << CpcDefault << " instead." << endl;
+		Cpc_ = CpcDefault;
+	}
 }
 
 
@@ -78,7 +101,34 @@ Foam::diracDeltaModels::snGradPCDeltaModel::~snGradPCDeltaModel()
 namespace Foam{
 
 tmp<surfaceScalarField> diracDeltaModels::snGradPCDeltaModel::delta(const volScalarField& alpha) const{
-	return fvc::snGrad<scalar>(alpha); // TODO: PC
+	// First compute alphaPC
+	volScalarField alphaPC(
+		IOobject
+		(
+				"PC(" + alpha.name() + ")", // new name
+				alpha().instance(), // same instance
+				alpha().mesh(), // same registry
+				IOobject::NO_READ,
+				IOobject::NO_WRITE,
+				true // register
+		),
+		(1/(1-Cpc_))
+		*
+		(
+			min(
+				max(
+					alpha,
+					Cpc_/2
+				),
+				1-Cpc_/2
+			)
+			-
+			Cpc_/2
+		)
+	);
+
+	// Then calculate the surface-normal gradient based on alphaPC
+	return fvc::snGrad<scalar>(alphaPC);
 }
 
 } // End namespace Foam

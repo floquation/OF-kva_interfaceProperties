@@ -36,6 +36,7 @@ SourceFiles
 #define diracDeltaModels_snGradPC_H
 
 #include "diracDeltaModel.H"
+#include "fieldTypes.H"
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
@@ -56,7 +57,7 @@ class snGradPCDeltaModel
 
 	// Private data members
 
-		float Cpc_; // PC-coefficient. 0 = CSF, 0.98 = SSF, 0.5 = FSF.
+		scalar Cpc_; // PC-coefficient. 0 = CSF, 0.98 = SSF, 0.5 = FSF.
 
 public:
 
@@ -72,7 +73,7 @@ public:
 
 		snGradPCDeltaModel(
 			const word& name,
-			float Cpc
+			scalar Cpc
 		);
 
     //- Destructor
