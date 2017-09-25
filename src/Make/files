@@ -5,7 +5,7 @@ weightFactor/sqrtAlphaInt/sqrtAlphaInt.C
 smootherKernel/smootherKernels.C
 smootherKernel/none/noneSmoothers.C
 smootherKernel/Csk/cskSmoothers.C
-smootherKernel/weightedSmootherKernel/weightedSmootherKernel.C
+smootherKernel/weightedSmootherKernel/weightedSmootherKernels.C
 smootherKernel/weightedSmootherKernel/cfcInterpolation/cfcInterpolationSmoothers.C
 smootherKernel/weightedSmootherKernel/normalDir/normalDirSmoothers.C
 

@@ -73,7 +73,7 @@ public:
 
     //- Runtime type information
 //	    virtual const word& type() const = 0; // Note: If we do not implement it, we need not mention it again.
-	    //TypeName("weightedSmootherKernel"); // Note: Cannot do this with a templated base class.
+	    TypeName("weightedSmootherKernel"); // Note: Cannot do this with a templated base class.
 
     // Constructors
 
@@ -115,10 +115,9 @@ public:
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
-// KVA: This gives me a "redefinition of constructor" error:
-//#ifdef NoRepository
-//    #include "weightedSmootherKernel.C"
-//#endif
+#ifdef NoRepository
+	#include "weightedSmootherKernel.C"
+#endif
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 

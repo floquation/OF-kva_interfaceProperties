@@ -1,2 +1,2 @@
 #! /usr/bin/sh
-wmake && (cd ../recompileSolvers/kva_interFoam && 'rm' $FOAM_USER_APPBIN/kva_interFoam && wmake; cd -)
+wmake && ('rm' $FOAM_USER_APPBIN/kva_interFoam; cd ../recompileSolvers/kva_interFoam && wmake; cd -)
