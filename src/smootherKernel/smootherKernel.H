@@ -22,13 +22,17 @@ License
     along with OpenFOAM.  If not, see <http://www.gnu.org/licenses/>.
 
 Class
-    Foam::smootherKernel
+    Foam::smoothers::smootherKernel
 
 Description
-    TODO
+    Abstract base class for algorithms that smooth volTypeFields.
 
 SourceFiles
     smootherKernel.C
+
+Author (community contribution)
+	Kevin van As/floquation
+	openfoam@kevinvanas.nl
 
 \*---------------------------------------------------------------------------*/
 
@@ -67,7 +71,7 @@ protected:
 
         word name_; // KVA: Added a name, like OpenFoam's "viscosityModel". I don't understand why.
 
-//		dictionary dict_; // TODO
+//		dictionary dict_; // TODO: Store to allow for runtime re-reading?
 
 public:
 
@@ -81,7 +85,7 @@ public:
 		(
 			autoPtr,
 			smootherKernel,
-			Istream,
+			dictionary,
 			(
 				const word& name,
 				const dictionary& dict
@@ -145,7 +149,7 @@ public:
     {                                                                          \
         namespace smoothers                                                    \
         {                                                                      \
-            smootherKernel<Type>::addIstreamConstructorToTable<SS<Type>>       \
+            smootherKernel<Type>::adddictionaryConstructorToTable<SS<Type>>       \
                 add##SS##Type##MeshConstructorToTable_;                        \
         }                                                                      \
     }

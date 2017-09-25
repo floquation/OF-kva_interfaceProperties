@@ -24,8 +24,8 @@ License
 \*---------------------------------------------------------------------------*/
 
 #include "normalDirSmoother.H"
+#include "sqrtAlphaInt.H"
 #include "cfcInterpolationSmoother.H"
-#include "Raeini.H"
 
 namespace Foam
 {
@@ -41,8 +41,8 @@ Foam::smoothers::normalDirSmoother<Type>::normalDirSmoother
 :
 	weightedSmootherKernel<Type>(
 		name,
-		new weightFactors::Raeini(
-			"RaeiniWeight(normalDirSmoother)",
+		new weightFactors::sqrtAlphaInt(
+			"sqrtAlphaIntWeight(normalDirSmoother)",
 			dict.lookupOrDefault<word>("alpha","alpha")
 		)
 	),
@@ -51,8 +51,6 @@ Foam::smoothers::normalDirSmoother<Type>::normalDirSmoother
 		new cfcInterpolationSmoother<Type>("interpolate(normalDirSmoother)", 1, NULL)
 	)
 {
-//	Info << "Dict contained numSmoothingIterations_ = " << numSmoothingIterations_ << endl; // works!
-
 	if (numSmoothingIterations_ <= 0)
 	{
 		int numSmoothingIterationsDefault = 2;
@@ -62,8 +60,13 @@ Foam::smoothers::normalDirSmoother<Type>::normalDirSmoother
 		numSmoothingIterations_ = numSmoothingIterationsDefault;
 	}
 
-//	Info << "(normalDirSmoother) Constructor." << endl;
-//	Info << "(normalDirSmoother) weight_.valid()? " << weight_.valid() << endl;
+	if (!dict.found("alpha")){
+		WarningInFunction
+			<< "Keyword \"alpha\" was not found in " << dict.name() << "." << nl
+			<< "    " << "Assuming the default value \"alpha\" instead." << nl
+			<< "    " << "But... There is a good chance that there is no field with that name!" << nl
+			<< "    " << "In that case you will soon receive a fatal error! Best of luck! ;)" << endl;
+	}
 }
 
 // * * * * * * * * * * * * * * Member Functions  * * * * * * * * * * * * * * //
@@ -113,11 +116,6 @@ Foam::smoothers::normalDirSmoother<Type>::smoothen(
     	// The arithmetics creates a new data field.
     	fldPrev = (1-2*weight)*fldSmooth + 2*weight*fld;
     }
-
-    // TODO: Test
-    Info << "(normalDirSmoother) Now calling tweight.clear(). Before: tweight.valid() = " << tweight.valid() << endl;
-    tweight.clear();
-    Info << "(normalDirSmoother) Was it called?? After: tweight.valid() = " << tweight.valid() << endl;
 
     return fldPrev;
 }

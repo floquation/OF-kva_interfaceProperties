@@ -22,13 +22,25 @@ License
     along with OpenFOAM.  If not, see <http://www.gnu.org/licenses/>.
 
 Class
-    Foam::weightFactor
+    Foam::diracDeltaModels::snGradPCDeltaModel
 
 Description
-    TODO
+    Approximates the Dirac delta function using the surface-normal gradient:
+    fvc::snGrad(alphaPC)
+    where alphaPC is a piece-wise linear function constructed from alpha.
+    See Eq. 20 of [1] for details.
+
+    [1] Raeini, Ali Q., Martin J. Blunt, and Branko Bijeljic.
+    "Modelling two-phase flow in porous media at the pore scale using
+    the volume-of-fluid method."
+    Journal of Computational Physics 231, no. 17 (2012): 5653-5668
 
 SourceFiles
-    weightFactor.C
+    snGradPCDeltaModel.C
+
+Author (community contribution)
+	Kevin van As/floquation
+	openfoam@kevinvanas.nl
 
 \*---------------------------------------------------------------------------*/
 

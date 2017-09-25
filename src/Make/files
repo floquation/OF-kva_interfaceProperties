@@ -1,11 +1,11 @@
 weightFactor/weightFactor.C
 weightFactor/unweighted/unweighted.C
-weightFactor/Raeini/Raeini.C
+weightFactor/sqrtAlphaInt/sqrtAlphaInt.C
 
 smootherKernel/smootherKernels.C
 smootherKernel/none/noneSmoothers.C
 smootherKernel/Csk/cskSmoothers.C
-smootherKernel/weightedSmootherKernel/weightedSmootherKernels.C
+smootherKernel/weightedSmootherKernel/weightedSmootherKernel.C
 smootherKernel/weightedSmootherKernel/cfcInterpolation/cfcInterpolationSmoothers.C
 smootherKernel/weightedSmootherKernel/normalDir/normalDirSmoothers.C
 

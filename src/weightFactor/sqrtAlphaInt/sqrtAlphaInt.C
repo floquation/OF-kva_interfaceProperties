@@ -23,7 +23,7 @@ License
 
 \*---------------------------------------------------------------------------*/
 
-#include "Raeini.H"
+#include "sqrtAlphaInt.H"
 #include "addToRunTimeSelectionTable.H"
 
 // * * * * * * * * * * * * * * Static Data Members * * * * * * * * * * * * * //
@@ -32,11 +32,11 @@ namespace Foam
 {
 namespace weightFactors
 {
-    defineTypeNameAndDebug(Raeini, 0);
+    defineTypeNameAndDebug(sqrtAlphaInt, 0);
     addToRunTimeSelectionTable
     (
     	weightFactor,
-        Raeini,
+        sqrtAlphaInt,
 		Istream
     );
 }
@@ -44,7 +44,7 @@ namespace weightFactors
 
 // * * * * * * * * * * * * * * * * Constructors  * * * * * * * * * * * * * * //
 
-Foam::weightFactors::Raeini::Raeini
+Foam::weightFactors::sqrtAlphaInt::sqrtAlphaInt
 (
 	const word& name,
 	const dictionary& dict
@@ -53,13 +53,16 @@ Foam::weightFactors::Raeini::Raeini
 	weightFactor(name),
 	alphaName_(dict.lookupOrDefault<word>("alpha","alpha"))
 {
-//	// First entry of "is" is the alphaName.
-//    token entry;
-//    is.read(entry);
-//    alphaName_ = entry.wordToken();
+	if (!dict.found("alpha")){
+		WarningInFunction
+			<< "Keyword \"alpha\" was not found in " << dict.name() << "." << nl
+			<< "    " << "Assuming the default value \"alpha\" instead." << nl
+			<< "    " << "But... There is a good chance that there is no field with that name!" << nl
+			<< "    " << "In that case you will soon receive a fatal error! Best of luck! ;)" << endl;
+	}
 }
 
-Foam::weightFactors::Raeini::Raeini
+Foam::weightFactors::sqrtAlphaInt::sqrtAlphaInt
 (
 	const word& name,
 	const word& alphaName
@@ -73,14 +76,14 @@ Foam::weightFactors::Raeini::Raeini
 
 // * * * * * * * * * * * * * * * * Destructor  * * * * * * * * * * * * * * * //
 
-Foam::weightFactors::Raeini::~Raeini()
+Foam::weightFactors::sqrtAlphaInt::~sqrtAlphaInt()
 {}
 
 // * * * * * * * * * * * * * * Member Functions  * * * * * * * * * * * * * * //
 
 namespace Foam{
 
-tmp<volScalarField> weightFactors::Raeini::weight(const fvMesh& mesh) const{
+tmp<volScalarField> weightFactors::sqrtAlphaInt::weight(const fvMesh& mesh) const{
 	// First lookup the required fields.
 	const volScalarField* alphaPtr;
 //    if(mesh.foundObject<volScalarField>(alphaName_)){
@@ -89,11 +92,9 @@ tmp<volScalarField> weightFactors::Raeini::weight(const fvMesh& mesh) const{
     	// Try a common name or error.
 //    	alphaPtr = &mesh.lookupObject<volScalarField>("alpha");
 //    }
-    const volScalarField& alpha = *alphaPtr;
+    const volScalarField& alpha = *alphaPtr; // Initialise via a pointer to deal with the if/then/else above.
 
-//    Info << "(Raeini.C) alpha.instance() = " << alphaPtr->instance() << endl;
-
-    // Limit alpha to prevent FPE
+    // Limit alpha to prevent FPE in sqrt below
     const volScalarField limitedAlpha
     (
         "limitedAlpha1",
@@ -106,7 +107,7 @@ tmp<volScalarField> weightFactors::Raeini::weight(const fvMesh& mesh) const{
 		new volScalarField(
 			IOobject
 			(
-				"weightFactor(Raeini)",
+				"weightFactor(sqrtAlphaInt)",
 				mesh.time().timeName(),
 				mesh,
 				IOobject::NO_READ,

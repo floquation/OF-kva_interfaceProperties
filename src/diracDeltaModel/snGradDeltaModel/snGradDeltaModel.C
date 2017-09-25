@@ -75,8 +75,6 @@ Foam::diracDeltaModels::snGradDeltaModel::~snGradDeltaModel()
 namespace Foam{
 
 tmp<surfaceScalarField> diracDeltaModels::snGradDeltaModel::delta(const volScalarField& alpha) const{
-//	tmp<volScalarField> result(fvc::snGrad<scalar>(alpha));
-//	return result;
 	return fvc::snGrad<scalar>(alpha);
 }
 

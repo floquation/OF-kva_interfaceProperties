@@ -33,7 +33,8 @@ SourceFiles
     fvcWeightedAverage.C
 
 Author (community contribution)
-	Kevin van As
+	Kevin van As/floquation
+	openfoam@kevinvanas.nl
 
 \*---------------------------------------------------------------------------*/
 
@@ -55,22 +56,11 @@ namespace Foam
 
 namespace fvc
 {
-//    //- Area-weighted average a surfaceField creating a volField
-//    template<class Type>
-//    tmp<GeometricField<Type, fvPatchField, volMesh>> weightedAverage
-//    (
-//        const GeometricField<Type, fvsPatchField, surfaceMesh>&
-//    );
-//
-//    //- Area-weighted average a surfaceField creating a volField
-//    template<class Type>
-//    tmp<GeometricField<Type, fvPatchField, volMesh>> weightedAverage
-//    (
-//        const tmp<GeometricField<Type, fvsPatchField, surfaceMesh>>&
-//    );
 
+	// TODO: Also implement 4 functions that take a surfaceField instead of a volField as an argument.
 
     //- Area-weighted average a volField creating a volField, using a weight factor.
+	//  average( field * weight ) / average( weight )
     template<class Type>
     tmp<GeometricField<Type, fvPatchField, volMesh>> weightedAverage
     (
@@ -79,6 +69,7 @@ namespace fvc
     );
 
     //- Area-weighted average a volField creating a volField, using a weight factor.
+	//  average( field * weight ) / average( weight
     //- tweight is NOT cleared upon usage, because it is likely that the weightField
     //  is required to be re-used by the caller (e.g. in several iterations).
     template<class Type>
@@ -89,6 +80,7 @@ namespace fvc
     );
 
     //- Area-weighted average a volField creating a volField, using a weight factor.
+	//  average( field * weight ) / average( weight
     template<class Type>
     tmp<GeometricField<Type, fvPatchField, volMesh>> weightedAverage
     (
@@ -97,6 +89,7 @@ namespace fvc
     );
 
     //- Area-weighted average a volField creating a volField, using a weight factor.
+	//  average( field * weight ) / average( weight
     //- tweight is NOT cleared upon usage, because it is likely that the weightField
     //  is required to be re-used by the caller (e.g. in several iterations).
     template<class Type>

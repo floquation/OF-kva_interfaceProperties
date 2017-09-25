@@ -25,13 +25,6 @@ License
 
 #include "smootherKernel.H"
 
-// * * * * * * * * * * * * * * Static Data Members * * * * * * * * * * * * * //
-
-//namespace Foam
-//{
-//	defineTypeNameAndDebug(smootherKernel, 0);
-//	defineRunTimeSelectionTable(smootherKernel, Istream);
-//}
 
 // * * * * * * * * * * * * * * * * Constructors  * * * * * * * * * * * * * * //
 
@@ -71,11 +64,11 @@ Foam::smoothers::smootherKernel<Type>::New
 //	alpha.db().lookupObject<volScalarField>("kiwi");
 
 	// First entry of "is" is the modelType.
-    word modelType;
+//    word modelType;
 //    token entry;
 //    is.read(entry);
 //    modelType = entry.wordToken();
-    modelType = dict.lookupOrDefault<word>("type","none");
+    word modelType = dict.lookupOrDefault<word>("type","none");
     // Next entries are the arguments to be passed to the constructor of modelType.
 
     if (!dict.found("type")){
@@ -83,14 +76,14 @@ Foam::smoothers::smootherKernel<Type>::New
 			<< "Selecting default smootherKernel none for " << name << "." << nl
 			<< "    To set a different type, add the \"type\" keyword to " << dict.name() << "." << endl
 			<< "Valid smootherKernel types are :" << endl
-			<< IstreamConstructorTablePtr_->sortedToc();
+			<< dictionaryConstructorTablePtr_->sortedToc();
     }else{
     	if (!quiet) Info<< "Selecting smootherKernel " << modelType << " for " << name << endl;
     }
 
 //    Info<< "label:" << readLabel(is) << endl;
 
-    if (!IstreamConstructorTablePtr_)
+    if (!dictionaryConstructorTablePtr_)
     {
         FatalErrorInFunction
             << "smootherKernel table is empty"
@@ -99,18 +92,18 @@ Foam::smoothers::smootherKernel<Type>::New
 
 //    Info<< "dictionaryConstructorTablePtr_ exists" << endl;
 
-    typename IstreamConstructorTable::iterator cstrIter =
-    		IstreamConstructorTablePtr_->find(modelType);
+    typename dictionaryConstructorTable::iterator cstrIter =
+    		dictionaryConstructorTablePtr_->find(modelType);
 
 //    Info<< "type sought for" << endl;
 
-    if (cstrIter == IstreamConstructorTablePtr_->end())
+    if (cstrIter == dictionaryConstructorTablePtr_->end())
     {
         FatalErrorInFunction
             << "Unknown smootherKernel type "
             << modelType << nl << nl
             << "Valid smootherKernel types are :" << endl
-            << IstreamConstructorTablePtr_->sortedToc()
+            << dictionaryConstructorTablePtr_->sortedToc()
             << exit(FatalError);
     }
 
@@ -133,19 +126,5 @@ Foam::smoothers::smootherKernel<Type>::smoothen(const tmp<GeometricField<Type, f
     return tReturn;
 }
 
-//bool Foam::smoothers::smootherKernel::read()
-//{
-////    alpha1_.mesh().solverDict(alpha1_.name()).lookup("cAlpha") >> cAlpha_;
-////    transportPropertiesDict_.lookup("sigma") >> sigma_;
-////
-////    transportPropertiesDict_.subDict( wordList(transportPropertiesDict_.lookup("phases"))[0] ).lookup("rho") >> rho1_; // KVA
-////    transportPropertiesDict_.subDict( wordList(transportPropertiesDict_.lookup("phases"))[1] ).lookup("rho") >> rho2_; // KVA
-////
-////    bool result = readSurfaceTensionModel(); // KVA
-////
-////    curvatureModel_->read(); // KVA
-//
-//    return result && true;
-//}
 
 // ************************************************************************* //

@@ -22,13 +22,21 @@ License
     along with OpenFOAM.  If not, see <http://www.gnu.org/licenses/>.
 
 Class
-    Foam::curvatureModel::normal
+    Foam::curvatureModels::normal
 
 Description
-    TODO
+    Provides an algorithm for calculating the interface curvature in
+    the VOF formulation. It uses the CSF model of Brackbill,
+    just as was originally implemented in OpenFOAM.
 
 SourceFiles
     normal.C
+
+Author (community contribution)
+	Kevin van As/floquation
+	openfoam@kevinvanas.nl
+	Note: the algorithm is just a copy-paste from OpenFOAM's implementation
+	in interfaceProperties.C. I only moved it to a RTS class.
 
 \*---------------------------------------------------------------------------*/
 

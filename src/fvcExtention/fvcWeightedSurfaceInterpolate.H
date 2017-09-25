@@ -33,7 +33,8 @@ SourceFiles
     fvcWeightedSurfaceInterpolate.C
 
 Author (community contribution)
-	Kevin van As
+	Kevin van As/floquation
+	openfoam@kevinvanas.nl
 
 \*---------------------------------------------------------------------------*/
 
@@ -55,7 +56,8 @@ namespace Foam
 
 namespace fvc
 {
-    //-
+    //- Interpolates a volField to a surfaceField using a weighted interpolation:
+	//  interpolate( field * weight )/interpolate( weight )
     template<class Type>
     tmp<GeometricField<Type, fvsPatchField, surfaceMesh>> weightedInterpolate
     (
@@ -63,7 +65,8 @@ namespace fvc
 		const volScalarField& weight
     );
 
-    //-
+    //- Interpolates a volField to a surfaceField using a weighted interpolation:
+    //  interpolate( field * weight )/interpolate( weight )
     //- tweight is NOT cleared upon usage, because it is likely that the weightField
     //  is required to be re-used by the caller (e.g. in several iterations).
     template<class Type>
@@ -73,7 +76,8 @@ namespace fvc
 		const tmp<volScalarField>& tweight
     );
 
-    //-
+    //- Interpolates a volField to a surfaceField using a weighted interpolation:
+    //  interpolate( field * weight )/interpolate( weight )
     template<class Type>
     tmp<GeometricField<Type, fvsPatchField, surfaceMesh>> weightedInterpolate
     (
@@ -81,7 +85,8 @@ namespace fvc
 		const volScalarField& weight
     );
 
-    //-
+    //- Interpolates a volField to a surfaceField using a weighted interpolation:
+    //  interpolate( field * weight )/interpolate( weight )
     //- tweight is NOT cleared upon usage, because it is likely that the weightField
     //  is required to be re-used by the caller (e.g. in several iterations).
     template<class Type>

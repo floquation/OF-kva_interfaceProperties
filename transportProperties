@@ -36,92 +36,109 @@ sigma           	[ 1 0 -2 0 0 0 0 ] 1111;
 
 // B*** kva_interfaceProperties *** //
 curvatureModel      vofsmooth; // normal; // If absent default: normal
-vofsmoothCoeffs
+
+vofsmoothCoeffs // Requires for curvatureModel "vofsmooth"
 {
-	//calculateNormal		normal;
-	//calculateNormal		smoothedGradient smootherKernel kernelParams;
+	
+ 	// Smooth gradAlpha before calculating nHat?
+	/*
+	calculateNormal{ // Smooth gradAlpha before calculating nHat?
+		smootherKernel-subdict (see below)
+	}
+	*/
 	calculateNormal{
-		type smoothedGradient;
+		type 	normalDir;		// See [4], eq. 15
+		numIts 	2; 				// Number of Iterations, default = 2
+		alpha	alpha.water;	// Name of the alpha (VOF) field, default = "alpha"
+	}
+
+	/* // TODO: Implement more generic method:
+	calculateNormal{
+		type smoothedGradient; // NYI
 		smoother{
-			type	Raeini;
-			numIts	2;
+			smootherKernel-subdict
 		}
 	}
-	 
-	//smoothAlpha			smootherKernel kernelParams;
-	//smoothAlpha			Csk 0.5 2; // Csk 1 2;
+	*/
+	
+	// Smoothes the alpha (VOF) field before using it to calculate nHat and the curvature.
 	smoothAlpha{
-		type 	Csk;
-		Csk 	0.5;
-		numIts	2;
+		type 	Csk;	// Take the Csk-weighted average of the smoothed and non-smoothed field.
+		Csk 	0.5;	// Weighting coefficient. 0 = no smoothing, 1 = pure smoothing.
+		numIts	2;		// Number of Iterations
+		smoother{
+			type 	interpolate;	// Simple "cell -> face -> cell" interpolation smoother, default = "none"
+			numIts 	1;				// Number of Iterations, default = 2
+			weightFactor{
+				type sqrtAlphaInt;	// Use sqrt(alpha*(1-alpha)) as weighting factor for the smoothing, default = "unweighted"
+				alpha alpha.water;	// Name of the alpha (VOF) field, default = "alpha"
+			}
+		}
 	}
 	
-	//smoothCurvature		smootherKernel kernelParams;
-	//smoothCurvature		Raeini	2; // CELESTE	8; // none;
-	//smoothCurvature{
-		//type 	Raeini;
-		//numIts 	2;
-	//}
+	// Smooth the curvature directly after it's computed?
+	/*
+	smoothCurvature{
+		smootherKernel-subdict (see below)
+	}
 	smoothCurvature{
 		type 	interpolate;
 		numIts 	2;
 		weightFactor{
-    		type Raeini;
-    		alpha alpha.water;
+    		weightFactor-subdict (see below)
 		}
 	}
-	
+	*/
+	smoothCurvature{ // Smoothes the curvature after it is calculated.
+		type 	normalDir;
+		numIts 	2;
+		alpha	alpha.water;
+	}
 }
 
-	/* smootherKernel can be:
-	  * none; // No smoothing
-	  * interpolate numIts weightFactor; // smooth by interpolating from cell centres to cell faces and back.
-		weightFactor can be:
-		 * Raeini
-		 * CELESTE 8
-		   where the number is the power used in the weighting factor (larger numbers are sharper).
-		 * none
-	  * Raeini numIts; // specialised kernel based on interpolate for the curvature
-	  * NYI: CELESTE ...; // specialised kernel based on interpolate for the curvature
-	  * Csk 0.5 numIts; // specialised kernel based on interpolate for smoothing alpha
-	    where the first argument is the Csk coefficient (similar to underrelaxation) (0 = no smoothing, 1 = complete smoothing)
-	  * NYI: Convolve cosine 0.75;
-	*/
-
 surfaceTensionForceModel{
-    densityWeighted         no; // If absent default: no (for my case I found density-weighting to _increase_ spurious currents)
+    densityWeighted         no; // If absent default: no (for my case I found density-weighting to _increase_(!) spurious currents).
     
-    //deltaModel				??;
+    // Model to approximate the Dirac delta function in Brackbill's CSF formulation.
     deltaModel{
-    	type	Cpc;
-    	Cpc		0.5; // original CSF = 0, SSF -> 1 (0.98 was best for Raeini), FSF (Raeini) = 0.5.
+    	type	snGradPC; // Default: snGrad
+    	Cpc		0.5; // original CSF = 0, SSF -> 1 (0.98 was best for sqrtAlphaInt), FSF (sqrtAlphaInt) = 0.5.
     }
     
-    //interpolateCurvature	weightFactor;
-    //interpolateCurvature	Raeini alpha.water; // CELESTE 8;
-    //interpolateCurvature	unweighted;
-    
-    //interpolateCurvature
-    //{
-    	//type Raeini;
-    	//alpha alpha.water;
-    //}
+    // Apply a weighting factor when interpolating the curvature from cell values to face values?
+    /*
     interpolateCurvature
     {
     	weightFactor
     	{
-    		type Raeini;
-    		alpha alpha.water;
+    		weightFactor-subdict (see below)
     	}
     }
-    
-    //{
-    	//type CELESTE;
-    	//delta 8;
-		//alpha alpha.water;
-    //}
-    
+    */
+    interpolateCurvature // c->f
+    {
+    	weightFactor
+    	{
+    		type sqrtAlphaInt;
+    		alpha alpha.water;
+    	}
+    }    
 }
+
+/* smootherKernel-subdict can be:
+  * type none; 									// No smoothing
+  * type interpolate (numIts, weightFactor);	// Smooth by interpolating from cell centres to cell faces and back. See [2] for details.
+  * type normalDir (numIts, alpha); 			// Smoothes a field in the interface-normal direction. See [4], Eq. 15 for details.
+  * type Csk (Csk, numIts, smoother); 			// Take the Csk-weighted average of the smoothed and non-smoothed field. Csk=0: no smoothing. Csk=1: pure smoothing. See [4], Eq. 12 for details.
+  * NYI: type CELESTE ...; // specialised kernel based on interpolate for the curvature
+  * NYI: type convolve cosine 0.75;
+*/
+/* weightFactor-subdict can be:
+  * type unweighted;			// Does not apply any weighting
+  * type sqrtAlphaInt (alpha);	// sqrt( alpha * (1-alpha) )
+  * NYI: type CELESTE (power);	// ( alpha * (1-alpha) )^power
+*/
+
 // E*** kva_interfaceProperties *** //
 
 

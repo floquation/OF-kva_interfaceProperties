@@ -22,13 +22,29 @@ License
     along with OpenFOAM.  If not, see <http://www.gnu.org/licenses/>.
 
 Class
-    Foam::vofsmooth::smootherKernels::none
+    Foam::smoothers::normalDirSmoother
 
 Description
-    TODO
+    Applies a weighted smoothing filter suitable for VOF.
+    The smoothing favors smoothing the field only in the interface-normal direction:
+    it diffuses the field _away_ from the interface while having a minimal effect on
+    the field in the interface region.
+    The used smoothing operation is a simple "cell -> face -> cell" interpolation method
+    (although this class may be easily adapted to read the desired smoother from a dict).
+
+    See Eqs. 15-16 of [1].
+
+    [1] Raeini, Ali Q., Martin J. Blunt, and Branko Bijeljic.
+    "Modelling two-phase flow in porous media at the pore scale using
+    the volume-of-fluid method."
+    Journal of Computational Physics 231, no. 17 (2012): 5653-5668
 
 SourceFiles
-    none.C
+    normalDirSmoother.C
+
+Author (community contribution)
+	Kevin van As/floquation
+	openfoam@kevinvanas.nl
 
 \*---------------------------------------------------------------------------*/
 

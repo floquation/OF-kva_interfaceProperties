@@ -22,13 +22,26 @@ License
     along with OpenFOAM.  If not, see <http://www.gnu.org/licenses/>.
 
 Class
-    Foam::weightFactor
+    Foam::weightFactors::weightFactor
 
 Description
-    TODO
+    Abstract base class for functions that are commonly used as weighting factors.
+
+    Beware: the child "unweighted" returns an empty tmp to represent that
+    no weighting is required. Callers should check:
+    	tmp<volScalarField> tresult = weightFactor_.weight(mesh);
+		if(tresult.empty()){
+			// unweighted
+		} else {
+			// weighted
+		}
 
 SourceFiles
     weightFactor.C
+
+Author (community contribution)
+	Kevin van As/floquation
+	openfoam@kevinvanas.nl
 
 \*---------------------------------------------------------------------------*/
 
@@ -38,8 +51,6 @@ SourceFiles
 #include "volFields.H"
 #include "typeInfo.H"
 #include "runTimeSelectionTables.H"
-//#include "GeometricFields.H"
-//#include "IOstreams.H"
 #include "tmp.H"
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
@@ -56,13 +67,12 @@ namespace weightFactors
 
 class weightFactor
 {
-    // Private Member Functions
 
 protected:
 
     // Protected data
 
-        word name_; // KVA: Added a name, like OpenFoam's "viscosityModel". I don't understand why.
+        word name_;
 
 public:
 
@@ -102,14 +112,6 @@ public:
     // Member Functions
 
 		virtual tmp<volScalarField> weight(const fvMesh& mesh) const = 0;
-
-//		template<class Type> // KVA note: virtual method cannot be templated in C++. Instead, template the entire class.
-//		virtual void smoothen(GeometricField<Type, fvPatchField, volMesh>& fld) const = 0;
-//		virtual tmp<GeometricField<Type, fvPatchField, volMesh>> smoothen(const GeometricField<Type, fvPatchField, volMesh>& fld) const = 0;
-
-//		virtual GeometricField<Type, fvPatchField, volMesh> smoothen(GeometricField<Type, fvPatchField, volMesh>& fld) const{
-//			return fld;
-//		}
 
 		//- Return name
 		const word& name() const

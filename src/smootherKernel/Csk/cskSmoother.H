@@ -22,13 +22,29 @@ License
     along with OpenFOAM.  If not, see <http://www.gnu.org/licenses/>.
 
 Class
-    Foam::vofsmooth::smootherKernels::none
+    Foam::smoothers::cskSmoother
 
 Description
-    TODO
+    Slow down the smoothing by taking the Csk-weighted average
+    of a smoothed field and the non-smoothed field of the previous iterations.
+
+    The cskSmoother uses another smoother to do the actual smoothing.
+    Csk = 0: no smoothing
+    Csk = 1: pure smoothing (then this intermediate class does in effect nothing)
+
+    See e.g. Eq. (12) of [1].
+
+    [1] Raeini, Ali Q., Martin J. Blunt, and Branko Bijeljic.
+    "Modelling two-phase flow in porous media at the pore scale using
+    the volume-of-fluid method."
+    Journal of Computational Physics 231, no. 17 (2012): 5653-5668
 
 SourceFiles
-    none.C
+    cskSmoother.C
+
+Author (community contribution)
+	Kevin van As/floquation
+	openfoam@kevinvanas.nl
 
 \*---------------------------------------------------------------------------*/
 
@@ -73,7 +89,6 @@ public:
         (
 			const word& name,
 			const dictionary & dict
-//			Istream& is
         );
 
 

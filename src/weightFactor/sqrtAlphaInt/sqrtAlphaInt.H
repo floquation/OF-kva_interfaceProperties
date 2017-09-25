@@ -22,18 +22,31 @@ License
     along with OpenFOAM.  If not, see <http://www.gnu.org/licenses/>.
 
 Class
-    Foam::weightFactor
+    Foam::weightFactors::sqrtAlphaInt
 
 Description
-    TODO
+    Weightfactor that is zero anywhere but at the interface:
+    	sqrt( alpha * (1-alpha) + SMALL )
+    where alpha is automatically limited between 0 and 1 using minmax.
+
+	This was was used in Eq. 16 of [1].
+
+    [1] Raeini, Ali Q., Martin J. Blunt, and Branko Bijeljic.
+    "Modelling two-phase flow in porous media at the pore scale using
+    the volume-of-fluid method."
+    Journal of Computational Physics 231, no. 17 (2012): 5653-5668
 
 SourceFiles
-    weightFactor.C
+    sqrtAlphaInt.C
+
+Author (community contribution)
+	Kevin van As/floquation
+	openfoam@kevinvanas.nl
 
 \*---------------------------------------------------------------------------*/
 
-#ifndef weightFactors_Raeini_H
-#define weightFactors_Raeini_H
+#ifndef weightFactors_sqrtAlphaInt_H
+#define weightFactors_sqrtAlphaInt_H
 
 #include "weightFactor.H"
 #include "autoPtr.H"
@@ -50,7 +63,7 @@ namespace weightFactors
                            Class weightFactor Declaration
 \*---------------------------------------------------------------------------*/
 
-class Raeini
+class sqrtAlphaInt
 :
 	public weightFactor
 {
@@ -64,23 +77,23 @@ class Raeini
 public:
 
     //- Runtime type information
-        TypeName("Raeini");
+        TypeName("sqrtAlphaInt");
 
 	// Constructors
 
-		Raeini(
+		sqrtAlphaInt(
 			const word& name,
 			const dictionary& dict
 		);
 
-		Raeini(
+		sqrtAlphaInt(
 			const word& name,
 			const word& alphaName
 		);
 
     //- Destructor
 
-		virtual ~Raeini();
+		virtual ~sqrtAlphaInt();
 
     // Member Functions
 

@@ -4,7 +4,9 @@ Extension of OpenFOAM's "interfaceProperties" library.
 A run-time selection mechanism was implemented to select the model for calculating the curvature (kappa).
 Current options are:
 - "normal": The current OpenFOAM implementation, cf. Brackbill.
-- "vofsmooth": The curvature is calculated based on a Laplacian-smoothed alpha-field [1,2], which may reduce spurious currents by an order of magnitude. This is a port of [Hoang's [2] OF-1.6-ext code](https://www.cfd-online.com/Forums/openfoam-verification-validation/124363-interfoam-validation-bubble-droplet-flows-microfluidics.html).
+- "vofsmooth": The curvature is calculated based on a Laplacian-smoothed alpha-field [1,2], which may reduce spurious currents by an order of magnitude.
+This was originally a port of [Hoang's [2] OF-1.6-ext code](https://www.cfd-online.com/Forums/openfoam-verification-validation/124363-interfoam-validation-bubble-droplet-flows-microfluidics.html),
+but in the meantime "vofsmooth" has been expanded with multiple other features, see e.g. [4].
 
 ## OpenFOAM version support
 
@@ -168,57 +170,7 @@ But honestly, let me ask you again, why wouldn't you just use $FOAM_USER_LIBBIN?
 
 ## Using the library in your case
 
-Simply add the following to your constant/transportProperties dictionary:
-```
-curvatureModel      vofsmooth; // normal;
-vofsmoothCoeffs
-{
-    /*
-    smoothAlpha{
-        type    interpolate;
-        numIts  2;
-        weightFactor{
-            type Raeini; // sqrt(alpha*(1-alpha)+1e-15)
-            alpha alpha.water;
-        }
-    }
-    smoothAlpha{
-        type    none;
-    }
-    */
-    smoothAlpha{
-        type    Csk; // See [4], eq. 12
-        numIts  2;
-        smoother{
-            type interpolate; // See [4], sec. 3.2
-            numIts  1;
-            weightFactor{
-                type unweighted;
-            }
-        }
-    }
-    
-    /*
-    smoothCurvature{
-        type    interpolate;
-        numIts  2;
-        weightFactor{
-            type Raeini;
-            alpha alpha.water; //smooth(alpha.water);
-        }
-    }
-    */
-    smoothCurvature{
-        type    normalDir; // See [4], eq. 15
-        numIts  2;
-        alpha   alpha.water;
-    }
-}
-
-surfaceTensionForceModel{
-    densityWeighted         no; // I have bad experience with "yes", but Brackbill (1992) does use it.
-}
-```
+Simply modify your constant/transportProperties dictionary using the provided transportProperties file.
 And you're ready to go!!
 
 You do not need to import the library in your case. This is done automagically by the dynamic linker.

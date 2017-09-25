@@ -22,13 +22,19 @@ License
     along with OpenFOAM.  If not, see <http://www.gnu.org/licenses/>.
 
 Class
-    Foam::weightFactor
+    Foam::diracDeltaModels::snGradDeltaModel
 
 Description
-    TODO
+    Approximates the Dirac delta function using the surface-normal gradient:
+    fvc::snGrad(alpha)
+    This is the same as OpenFOAM's original implementation.
 
 SourceFiles
-    weightFactor.C
+    snGradDeltaModel.C
+
+Author (community contribution)
+	Kevin van As/floquation
+	openfoam@kevinvanas.nl
 
 \*---------------------------------------------------------------------------*/
 

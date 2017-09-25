@@ -30,7 +30,6 @@ Foam::smoothers::noneSmoother<Type>::noneSmoother
 (
 	const word& name,
 	const dictionary& dict
-//	Istream& is
 )
 :
 	smootherKernel<Type>(name)

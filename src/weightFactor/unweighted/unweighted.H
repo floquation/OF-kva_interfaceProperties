@@ -22,13 +22,26 @@ License
     along with OpenFOAM.  If not, see <http://www.gnu.org/licenses/>.
 
 Class
-    Foam::weightFactor
+    Foam::weightFactors::unweighted
 
 Description
-    TODO
+    Unweighted weight factor.
+    Rather than returning a field filled with ones, this returns an empty tmp
+    to save computational power.
+    Callers should check:
+    	tmp<volScalarField> tresult = weightFactor_.weight(mesh);
+		if(tresult.empty()){
+			// unweighted
+		} else {
+			// weighted
+		}
 
 SourceFiles
-    weightFactor.C
+    unweighted.C
+
+Author (community contribution)
+	Kevin van As/floquation
+	openfoam@kevinvanas.nl
 
 \*---------------------------------------------------------------------------*/
 

@@ -22,13 +22,25 @@ License
     along with OpenFOAM.  If not, see <http://www.gnu.org/licenses/>.
 
 Class
-    Foam::vofsmooth::smootherKernels::none
+    Foam::smootherKernel::cfcInterpolationSmoother
 
 Description
-    TODO
+    Smoothes the field using a simple "cell -> face -> cell" interpolation.
+
+	See for example:
+    [1] Hoang, D. A., V. Van Steijn, L. M. Portela, M. T. Kreutzer, and C. R. Kleijn.
+    "Modeling of low-capillary number segmented flows in microchannels using OpenFOAM."
+    In AIP Conference Proceedings, vol. 1479, no. 1, pp. 86-89. AIP, 2012.
+    [2] Lafaurie, Bruno, Carlo Nardone, Ruben Scardovelli, Stéphane Zaleski, and Gianluigi Zanetti.
+    "Modelling merging and fragmentation in multiphase flows with SURFER."
+    Journal of Computational Physics 113, no. 1 (1994): 134-147.
 
 SourceFiles
-    none.C
+    cfcInterpolationSmoother.C
+
+Author (community contribution)
+	Kevin van As/floquation
+	openfoam@kevinvanas.nl
 
 \*---------------------------------------------------------------------------*/
 

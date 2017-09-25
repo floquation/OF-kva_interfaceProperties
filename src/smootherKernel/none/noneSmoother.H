@@ -22,13 +22,18 @@ License
     along with OpenFOAM.  If not, see <http://www.gnu.org/licenses/>.
 
 Class
-    Foam::vofsmooth::smootherKernels::none
+    Foam::smoothers::noneSmoother
 
 Description
-    TODO
+    Does not apply any smoothing, but returns a CONST_REF-type tmp
+    to the input field instead.
 
 SourceFiles
-    none.C
+    noneSmoother.C
+
+Author (community contribution)
+	Kevin van As/floquation
+	openfoam@kevinvanas.nl
 
 \*---------------------------------------------------------------------------*/
 

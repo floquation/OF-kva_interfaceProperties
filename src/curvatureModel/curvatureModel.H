@@ -25,10 +25,14 @@ Class
     Foam::curvatureModel
 
 Description
-    Class responsible for calculating the curvature (K) based on the VOF field.
+    Abstract base class responsible for calculating the curvature (K) based on the VOF field.
 
 SourceFiles
     curvatureModel.C
+
+Author (community contribution)
+	Kevin van As/floquation
+	openfoam@kevinvanas.nl
 
 \*---------------------------------------------------------------------------*/
 
@@ -46,7 +50,7 @@ SourceFiles
 namespace Foam
 {
 
-class interfaceProperties;
+class interfaceProperties; // forward declaration for friend class
 
 /*---------------------------------------------------------------------------*\
                            Class curvatureModel Declaration
@@ -59,7 +63,7 @@ protected:
 
     // Protected data
 
-        word name_; // KVA: Added a name, like OpenFoam's "viscosityModel". I don't understand why.
+        word name_;
 
         const interfaceProperties& interfaceProperties_;
 

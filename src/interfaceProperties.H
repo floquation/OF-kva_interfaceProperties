@@ -31,7 +31,10 @@ Description
     -# Correct the alpha boundary condition for dynamic contact angle.
     -# Calculate interface curvature.
 
-Modifications (Kevin van As = KVA)
+SourceFiles
+    interfaceProperties.C
+
+Modifications (Kevin van As/floquation = KVA; openfoam@kevinvanas.nl)
 	.H/.C: Added field curvatureModel_
 	.H: curvatureModel is a friend class
 	.C: Replaced calculateK()'s content by a forward call to curvatureModel.
@@ -44,9 +47,6 @@ Modifications (Kevin van As = KVA)
 
     .H/.C: Made the curvature interpolation use an optional weightFactor with RTS.
     .H/.C: Forwarded the delta function approximation (default: fvc::snGrad(alpha)) to a RTS class.
-
-SourceFiles
-    interfaceProperties.C
 
 \*---------------------------------------------------------------------------*/
 
@@ -65,7 +65,7 @@ SourceFiles
 namespace Foam
 {
 
-class curvatureModel; // KVA
+class curvatureModel; // KVA: forward declaration for friend class
 
 /*---------------------------------------------------------------------------*\
                            Class interfaceProperties Declaration

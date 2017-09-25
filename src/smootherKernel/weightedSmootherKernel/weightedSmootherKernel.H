@@ -22,13 +22,18 @@ License
     along with OpenFOAM.  If not, see <http://www.gnu.org/licenses/>.
 
 Class
-    Foam::vofsmooth::smootherKernels::none
+    Foam::smoothers::weightedSmootherKernel
 
 Description
-    TODO
+    Abstract base class for any smoother that requires a weightFactor
+    to apply weighted smoothing to a volTypeField.
 
 SourceFiles
-    none.C
+    weightedSmootherKernel.C
+
+Author (community contribution)
+	Kevin van As/floquation
+	openfoam@kevinvanas.nl
 
 \*---------------------------------------------------------------------------*/
 
@@ -67,8 +72,8 @@ protected:
 public:
 
     //- Runtime type information
-//	    virtual const word& type() const = 0;
-	    //TypeName("weightedSmootherKernel"); // KVA note: cannot do this with a templated base class.
+//	    virtual const word& type() const = 0; // Note: If we do not implement it, we need not mention it again.
+	    //TypeName("weightedSmootherKernel"); // Note: Cannot do this with a templated base class.
 
     // Constructors
 
@@ -80,6 +85,8 @@ public:
         );
 
         //- Construct from components
+        //  Note: Do not use autoPtr, but a normal pointer, because the weightFactor might also be used
+        //   by the caller. This is not supported by autoPtr: it requires unique ownership.
         weightedSmootherKernel
         (
 			const word& name,
@@ -108,9 +115,10 @@ public:
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
-#ifdef NoRepository
-    #include "weightedSmootherKernel.C"
-#endif
+// KVA: This gives me a "redefinition of constructor" error:
+//#ifdef NoRepository
+//    #include "weightedSmootherKernel.C"
+//#endif
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 

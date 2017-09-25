@@ -22,13 +22,20 @@ License
     along with OpenFOAM.  If not, see <http://www.gnu.org/licenses/>.
 
 Class
-    Foam::diracDeltaModel
+    Foam::diracDeltaModels::diracDeltaModel
 
 Description
-    TODO
+    Abstract base class responsible for calculating an approximation
+    for the Dirac delta function as is required in Brackbill's CSF
+    formulation. It takes a Heaviside field (e.g. the VOF field (alpha)
+    of interFoam) as an argument.
 
 SourceFiles
     diracDeltaModel.C
+
+Author (community contribution)
+	Kevin van As/floquation
+	openfoam@kevinvanas.nl
 
 \*---------------------------------------------------------------------------*/
 
@@ -62,7 +69,7 @@ protected:
 
     // Protected data
 
-        word name_; // KVA: Added a name, like OpenFoam's "viscosityModel". I don't understand why.
+        word name_;
 
 public:
 

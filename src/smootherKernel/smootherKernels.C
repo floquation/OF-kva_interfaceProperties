@@ -21,9 +21,6 @@ License
     You should have received a copy of the GNU General Public License
     along with OpenFOAM.  If not, see <http://www.gnu.org/licenses/>.
 
-Description
-    TODO
-
 \*---------------------------------------------------------------------------*/
 
 #include "smootherKernel.H"
@@ -42,11 +39,11 @@ namespace smoothers
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 // Define the constructor function hash tables
 
-defineTemplateRunTimeSelectionTable(smootherKernel<scalar>, Istream);
-defineTemplateRunTimeSelectionTable(smootherKernel<vector>, Istream);
-defineTemplateRunTimeSelectionTable(smootherKernel<sphericalTensor>, Istream);
-defineTemplateRunTimeSelectionTable(smootherKernel<symmTensor>, Istream);
-defineTemplateRunTimeSelectionTable(smootherKernel<tensor>, Istream);
+defineTemplateRunTimeSelectionTable(smootherKernel<scalar>, dictionary);
+defineTemplateRunTimeSelectionTable(smootherKernel<vector>, dictionary);
+defineTemplateRunTimeSelectionTable(smootherKernel<sphericalTensor>, dictionary);
+defineTemplateRunTimeSelectionTable(smootherKernel<symmTensor>, dictionary);
+defineTemplateRunTimeSelectionTable(smootherKernel<tensor>, dictionary);
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
