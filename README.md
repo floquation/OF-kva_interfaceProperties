@@ -42,8 +42,10 @@ cd kva_interfaceProperties
 Then choose the correct branch amongst these options:
 ```bash
 git checkout of40
+git checkout of40-dev
 git checkout of50
 ```
+Tip: the `of40-dev` branch has much more elaborate features than the main branches, but I have stopped developing this library as I no longer work on this topic. Hence those features have never been merged into the main branch. However, they seemed to work quite well. If anyone would like to continue development, or properly test them, please feel free to contact me.
 
 Then all that's left is to compile the code:
 ```bash
@@ -211,8 +213,9 @@ Without it, your simulation could very well become non-physical, despite it conv
 
 ## About the author
 
-I (Kevin van As) am (at the time of writing) a PhD student at TUDelft, Faculty of Applied Sciences, Transport Phenomena group.
-My work is, qualitatively, on simulating boiling within OpenFOAM.
+I was a PhD student at TUDelft, Faculty of Applied Sciences, Transport Phenomena group (2015-2019) when I was developing this library.
+My work was initially on simulating boiling within OpenFOAM, which later considerably changed to simulating interferometric light scattering from red blood cells.
+I now (2019) no longer work in research.
 
 https://www.linkedin.com/in/kevinvanas/
 
